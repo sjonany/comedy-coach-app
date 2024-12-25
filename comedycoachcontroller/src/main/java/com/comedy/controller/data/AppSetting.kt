@@ -2,9 +2,10 @@ package com.comedy.controller.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.comedy.controller.data.AppSetting.Companion.TABLE_NAME
 
 // Data model for all settings of this app that's persisted.
-@Entity(tableName = "app_settings")
+@Entity(tableName = TABLE_NAME)
 data class AppSetting(
     /*
     ID of this setting.
@@ -22,5 +23,6 @@ data class AppSetting(
     companion object {
         // ID of the default setting. For now there should just be one setting row and it has this ID.
         const val DEFAULT_ID = "DEFAULT"
+        const val TABLE_NAME = "app_settings"
     }
 }
