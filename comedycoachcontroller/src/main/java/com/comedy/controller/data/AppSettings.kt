@@ -2,17 +2,19 @@ package com.comedy.controller.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.comedy.controller.data.AppSetting.Companion.TABLE_NAME
+import com.comedy.controller.data.AppSettings.Companion.TABLE_NAME
 
-// Data model for all settings of this app that's persisted.
+/**
+ * Data model for all settings of this app that's persisted.
+ */
 @Entity(tableName = TABLE_NAME)
-data class AppSetting(
+data class AppSettings(
     /*
     ID of this setting.
-    Currently there should be just one with a hardcoded value: "DEFAULT"
+    Currently there should be just one with a hardcoded value: "MAIN"
      */
     @PrimaryKey
-    val id: String = DEFAULT_ID,
+    val id: String = MAIN_ID,
 
     /*
     API key used to interact w/ Open AI API.
@@ -21,8 +23,8 @@ data class AppSetting(
     val openAiApiKey: String
 ) {
     companion object {
-        // ID of the default setting. For now there should just be one setting row and it has this ID.
-        const val DEFAULT_ID = "DEFAULT"
+        // ID of the main settings. For now there should just be one settings row and it has this ID.
+        const val MAIN_ID = "MAIN"
         const val TABLE_NAME = "app_settings"
     }
 }
