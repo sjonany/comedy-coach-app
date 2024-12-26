@@ -1,9 +1,13 @@
 package com.comedy.controller.data
 
 import android.content.Context
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.comedy.controller.ControllerApplication
 
 /**
  * App container for Dependency injection.
+ * Adapted from https://github.com/google-developer-training/basic-android-kotlin-compose-training-inventory-app/blob/room/app/src/main/java/com/example/inventory/ui/AppViewModelProvider.kt
  */
 interface AppContainer {
     val appSettingsRepository: AppSettingsRepository
@@ -20,3 +24,6 @@ class AppDataContainer(private val context: Context) : AppContainer {
         OfflineAppSettingsRepository(AppDatabase.getDatabase(context).appSettingDao())
     }
 }
+
+fun CreationExtras.controllerApplication(): ControllerApplication =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ControllerApplication)
