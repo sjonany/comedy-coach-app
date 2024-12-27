@@ -1,6 +1,5 @@
 package com.comedy.controller.data
 
-import AppDatabase
 import android.content.Context
 
 /**
@@ -19,6 +18,6 @@ class AppDataContainer(private val context: Context) : AppContainer {
      * Implementation for [AppSettingsRepository]
      */
     override val appSettingsRepository: AppSettingsRepository by lazy {
-        OfflineAppSettingsRepository(AppDatabase.getDatabase(context).appSettingDao())
+        OfflineAppSettingsRepository(AppDatabase.getDatabase(context).appSettingsDao())
     }
 }
