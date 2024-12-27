@@ -1,11 +1,13 @@
 package com.comedy.controller.ui.appsetting
 
-import androidx.lifecycle.ViewModel
-import com.comedy.controller.data.AppSettings
-import com.comedy.controller.data.AppSettingsRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.comedy.controller.data.AppSettings
+import com.comedy.controller.data.AppSettingsRepository
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel to update AppSettings in Room db.
@@ -21,6 +23,22 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
     var appSettingsUiState by mutableStateOf(AppSettingsUiState())
         private set
 
+    // Initialize the value w/ what we have from the db
+    init {
+        loadAppSettings()
+    }
+
+    // Load app settings from the repo
+    private fun loadAppSettings() {
+        viewModelScope.launch {
+            appSettingsRepository.getMainSettings().collect { repoSettings ->
+                // Update the UI state when the flow emits a new value
+                appSettingsUiState = repoSettings?.toUiState() ?: AppSettingsUiState()
+            }
+        }
+    }
+
+
     /**
      * Updates the [appSettingsUiState] with the value provided in the argument.
      */
@@ -31,10 +49,12 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
 
     /** Save the current ui state to db. */
     suspend fun saveAppSettings() {
-            appSettingsRepository.updateOpenAiApiKey(
-                appSettingsUiState.appSettingsDetails.toDb().openAiApiKey)
+        appSettingsRepository.updateOpenAiApiKey(
+            appSettingsUiState.appSettingsDetails.toDb().openAiApiKey
+        )
     }
 }
+
 /**
  * Represents Ui State for an AppSettings.
  */
