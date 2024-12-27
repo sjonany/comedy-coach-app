@@ -1,9 +1,7 @@
 package com.comedy.controller.data
 
+import AppDatabase
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.comedy.controller.ControllerApplication
 
 /**
  * App container for Dependency injection.
@@ -24,6 +22,3 @@ class AppDataContainer(private val context: Context) : AppContainer {
         OfflineAppSettingsRepository(AppDatabase.getDatabase(context).appSettingDao())
     }
 }
-
-fun CreationExtras.controllerApplication(): ControllerApplication =
-    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ControllerApplication)

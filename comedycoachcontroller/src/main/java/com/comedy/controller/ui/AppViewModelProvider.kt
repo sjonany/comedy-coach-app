@@ -1,12 +1,14 @@
 package com.comedy.controller.ui
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.comedy.controller.data.controllerApplication
+import com.comedy.controller.ControllerApplication
 import com.comedy.controller.ui.appsetting.AppSettingsViewModel
 
 /**
- * Provides Factory to create instance of ViewModel for the entire Inventory app
+ * Provides Factory to create instance of ViewModel for the entire controller app
  */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -18,3 +20,6 @@ object AppViewModelProvider {
         }
     }
 }
+
+fun CreationExtras.controllerApplication(): ControllerApplication =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ControllerApplication)

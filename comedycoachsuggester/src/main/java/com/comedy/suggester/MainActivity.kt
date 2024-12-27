@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             ComedyCoachControllerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = "Android from suggester",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
