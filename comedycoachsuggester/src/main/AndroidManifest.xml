@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -8,9 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ComedyCoachController">
-        <!-- Declares the input method service. -->
+
+        <!-- This service shows suggestions around the keyboard area.  -->
         <service
-            android:name=".ComedyCoachInputMethodService"
+            android:name=".ResponseSuggestionInputMethodService"
             android:exported="true"
             android:label="comedy coach IME"
             android:permission="android.permission.BIND_INPUT_METHOD">
@@ -21,8 +23,22 @@
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
-        <!-- Optional: an activity for controlling the IME settings. -->
 
+        <!-- This service watches for chat apps, and has a button that will trigger
+             ResponseSuggestionInputMethodService -->
+        <service
+            android:name=".ChatWatcherAccessibilityService"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- Optional: an activity for controlling the IME settings. -->
         <activity
             android:name=".ComedyCoachIMESettingsActivity"
             android:exported="true"

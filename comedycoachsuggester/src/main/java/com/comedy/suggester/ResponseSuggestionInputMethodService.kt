@@ -6,7 +6,10 @@ import android.widget.Button
 
 private const val ALL_CHARACTERS = 1000
 
-class ComedyCoachInputMethodService : InputMethodService() {
+/**
+ * This service shows suggestions around the keyboard area.
+ */
+class ResponseSuggestionInputMethodService : InputMethodService() {
 
     override fun onCreateInputView(): View {
         // Inflate the custom view with buttons or options
