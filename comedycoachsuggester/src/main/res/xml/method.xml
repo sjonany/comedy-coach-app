@@ -2,6 +2,5 @@
 <input-method xmlns:android="http://schemas.android.com/apk/res/android">
     <subtype
         android:label="keyboard label"
-        android:imeSubtypeLocale="en_US"
-        android:keyboardLayout="@xml/qwerty_keyboard" />
+        android:imeSubtypeLocale="en_US" />
 </input-method>
