@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<input-method xmlns:android="http://schemas.android.com/apk/res/android">
+    <subtype
+        android:label="keyboard label"
+        android:imeSubtypeLocale="en_US"
+        android:keyboardLayout="@xml/qwerty_keyboard" />
+</input-method>
