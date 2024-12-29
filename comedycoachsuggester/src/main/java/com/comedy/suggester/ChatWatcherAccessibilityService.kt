@@ -52,8 +52,10 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
     private fun showFloatingWidget(textEditNode: AccessibilityNodeInfo) {
         // TODO: How to auto-delete the floating widget when we are no longer in the same context?
         // When the rootInActiveWindow changes I guess- might have to listen to another accessibility event.
-        suggestionFloatingWidgetManager =
-            SuggestionFloatingWidgetManager(this, rootInActiveWindow, textEditNode)
+        if (suggestionFloatingWidgetManager == null) {
+            suggestionFloatingWidgetManager =
+                SuggestionFloatingWidgetManager(this, rootInActiveWindow, textEditNode)
+        }
         suggestionFloatingWidgetManager?.showWidget()
     }
 

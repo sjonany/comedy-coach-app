@@ -35,8 +35,10 @@ class SuggestionFloatingWidgetManager(
         val showSuggestionsButton = floatingView!!.findViewById<Button>(R.id.showSuggestionsButton)
         showSuggestionsButton.setOnClickListener() {
             Log.d("SuggestionFloatingWidgetManager", "Show suggestion button clicked")
-            suggestionResultWidgetManager =
-                SuggestionResultWidgetManager(context, rootInActiveWindow, textEditNode)
+            if (suggestionResultWidgetManager == null) {
+                suggestionResultWidgetManager =
+                    SuggestionResultWidgetManager(context, rootInActiveWindow, textEditNode)
+            }
             suggestionResultWidgetManager!!.showWidget()
         }
 
