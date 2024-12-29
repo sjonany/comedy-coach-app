@@ -2,10 +2,10 @@ package com.comedy.suggester
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.graphics.Rect
 import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 
 /**
  * This service watches for chat apps, and has a button that will trigger
@@ -33,35 +33,33 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         if (packageName == "com.discord") {
             // Look for typing in a text field
             if (event.eventType == AccessibilityEvent.TYPE_VIEW_FOCUSED &&
-                event.className == "android.widget.EditText"
+                event.className == "android.widget.EditText" &&
+                event.source != null
             ) {
-                // Get the bounds of the EditText
-                val textEditBounds = Rect()
-                event.source?.getBoundsInScreen(textEditBounds)
-
-                if (textEditBounds.height() > 0) {
-                    // Show floating widget on the EditText
-                    showFloatingWidget(textEditBounds)
-                }
+                showFloatingWidget(event.source!!)
             }
         }
     }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        suggestionFloatingWidgetManager = SuggestionFloatingWidgetManager(this)
     }
 
     override fun onInterrupt() {
         // Required override, leave empty
     }
 
-    private fun showFloatingWidget(textEditBounds: Rect) {
-        suggestionFloatingWidgetManager?.showWidget(textEditBounds)
+    private fun showFloatingWidget(textEditNode: AccessibilityNodeInfo) {
+        // TODO: How to auto-delete the floating widget when we are no longer in the same context?
+        // When the rootInActiveWindow changes I guess- might have to listen to another accessibility event.
+        suggestionFloatingWidgetManager =
+            SuggestionFloatingWidgetManager(this, rootInActiveWindow, textEditNode)
+        suggestionFloatingWidgetManager?.showWidget()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         suggestionFloatingWidgetManager?.removeWidget()
     }
+
 }
