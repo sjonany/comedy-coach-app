@@ -1,7 +1,6 @@
 package com.comedy.suggester
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Bundle
@@ -32,16 +31,6 @@ class SuggestionResultWidgetManager(
 
     // TODO: Fetch chat context, call LLM. Right now it just shows hardcoded suggestions.
     fun showWidget() {
-        // Get the root node of the active window (this gives us access to the UI of the current screen)
-        // Check if the keyboard is visible by observing the insets (workaround)
-        val screenBounds = Rect()
-        rootInActiveWindow.getBoundsInScreen(screenBounds)
-        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        val keyboardHeight = screenHeight - screenBounds.bottom
-
-        // Keyboard isn't visible.
-        if (keyboardHeight <= 0) return
-
         if (floatingView != null) return // Already shown
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -73,10 +62,14 @@ class SuggestionResultWidgetManager(
         )
 
 
-        // Set the y-position of the floating view to place it near the keyboard
+        // Set the y-position of the floating view to place it below the editText
+        // Ideally I will place it to cover the keyboard, but idk how to get the keyboard location
+        // easily
         params.x = 0
         // Display it over the keyboard
-        params.y = screenBounds.bottom
+        val editTextBound = Rect()
+        editTextNode.getBoundsInScreen(editTextBound)
+        params.y = editTextBound.bottom
         params.gravity =
             Gravity.BOTTOM or Gravity.START // Position the view at the bottom left
 
@@ -101,6 +94,6 @@ class SuggestionResultWidgetManager(
         )
 
         val success = editTextNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
-        Log.d(LOG_TAG, "Replacing text with $text. Succces: $success")
+        Log.d(LOG_TAG, "Replacing text with $text. Success: $success")
     }
 }
