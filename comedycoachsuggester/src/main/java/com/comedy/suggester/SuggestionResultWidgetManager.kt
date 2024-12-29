@@ -53,25 +53,25 @@ class SuggestionResultWidgetManager(
         option3.setOnClickListener { replaceText(editTextNode, "Option 3 Selected") }
         finishButton.setOnClickListener { removeWidget() }
 
+        val displayMetrics = context.resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels // Total screen height
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
 
-
-        // Set the y-position of the floating view to place it below the editText
-        // Ideally I will place it to cover the keyboard, but idk how to get the keyboard location
-        // easily
+        params.gravity = Gravity.TOP or Gravity.START
         params.x = 0
-        // Display it over the keyboard
         val editTextBound = Rect()
         editTextNode.getBoundsInScreen(editTextBound)
-        params.y = editTextBound.bottom
-        params.gravity =
-            Gravity.BOTTOM or Gravity.START // Position the view at the bottom left
+        // Idk something about the accessibility service giving non-trustworthy coordinates
+        // If I want to fix this: Maybe better to just see if keyboard is visible, and place it there.
+        // params.y = editTextBound.bottom
+        params.y = 1650 - SuggestionFloatingWidgetManager.LAYOUT_DRAW_OFFSET
+        params.height = screenHeight - params.y
 
         // TODO: Make the floating window consume the same space as keyboard, but it should be
         // scrollable if it has too much content

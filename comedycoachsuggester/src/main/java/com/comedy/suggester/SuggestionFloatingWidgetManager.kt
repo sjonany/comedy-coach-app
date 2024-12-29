@@ -20,6 +20,14 @@ class SuggestionFloatingWidgetManager(
     private val rootInActiveWindow: AccessibilityNodeInfo,
     private val textEditNode: AccessibilityNodeInfo
 ) {
+
+    companion object {
+        // For some reason whenever we windowManager.addView, the y offset that I have is further
+        // incremented by this amount before rendering.
+        // Maybe something about the status bar is being further added to the y offset.
+        const val LAYOUT_DRAW_OFFSET = 150
+    }
+
     private var suggestionResultWidgetManager: SuggestionResultWidgetManager? = null
     private var windowManager: WindowManager? = null
     private var floatingView: View? = null
@@ -50,17 +58,22 @@ class SuggestionFloatingWidgetManager(
             PixelFormat.TRANSLUCENT
         )
 
-        // Position the floating widget over the EditText
+        // Position the floating widget below the edit text
         val textEditBounds = Rect()
+        // TODO: Sometimes this is off? The starting y offset is > end y offset, and so the show
+        // suggestions button is shown at the top.
         textEditNode.getBoundsInScreen(textEditBounds)
         if (textEditBounds.height() == 0) {
             return
         }
+        params.gravity = Gravity.TOP or Gravity.START
         params.x = textEditBounds.left
-        params.y = textEditBounds.top
+        // Idk something about the accessibility service giving non-trustworthy coordinates
+        // If I want to fix this: Maybe better to just see if keyboard is visible, and place it
+        // relative to that
+        params.y = 1500 - LAYOUT_DRAW_OFFSET
         params.width = textEditBounds.width()
         params.height = textEditBounds.height()
-        params.gravity = Gravity.TOP or Gravity.START
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager?.addView(floatingView, params)
