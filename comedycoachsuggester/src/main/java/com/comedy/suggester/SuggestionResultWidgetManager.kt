@@ -73,6 +73,7 @@ class SuggestionResultWidgetManager(
         params.y = 1650 - SuggestionFloatingWidgetManager.LAYOUT_DRAW_OFFSET
         params.height = screenHeight - params.y
 
+        Log.d(LOG_TAG, "Floating widget params: $params")
         // TODO: Make the floating window consume the same space as keyboard, but it should be
         // scrollable if it has too much content
         // Add the floating view to the window manager
