@@ -10,20 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ComedyCoachController">
 
-        <!-- This service shows suggestions around the keyboard area.  -->
-        <service
-            android:name=".ResponseSuggestionInputMethodService"
-            android:exported="true"
-            android:label="comedy coach IME"
-            android:permission="android.permission.BIND_INPUT_METHOD">
-            <intent-filter>
-                <action android:name="android.view.InputMethod" />
-            </intent-filter>
-            <meta-data
-                android:name="android.view.im"
-                android:resource="@xml/method" />
-        </service>
-
         <!-- This service watches for chat apps, and has a button that will trigger
              ResponseSuggestionInputMethodService -->
         <service
