@@ -6,7 +6,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.view.accessibility.AccessibilityWindowInfo
 
 
 /**
@@ -28,10 +27,6 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        Log.d(
-            LOG_TAG,
-            "got event: $event"
-        )
         if (event == null) return
         // Need overlay permission first. The settings activity handles all these
         if (!Settings.canDrawOverlays(this)) {
@@ -49,26 +44,17 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
 
         Log.d(
             LOG_TAG,
-            "is keyboard visible = ${isKeyboardVisible()}, got event: $packageName $eventTypeString"
+            "got event: $eventTypeString, $packageName"
         )
 
-        if (packageName == DISCORD_PACKAGE) {
-            handleDiscordEvent(event)
-            return
-        }
-
-        assert(packageName != DISCORD_PACKAGE)
-        // Assume we have navigated away from discord. Destroy the suggestion windows.
-        // TODO: Not reliable, even if I added the following to the manifest.
-        // Dunno how to catch back swipe, and keyboard visibility isn't reliable too.
-        // Ugh, let's just rely on a manual cancel button.
-        // "android:packageNames="com.discord,com.android.activitymanager,com.android.launcher,com.android.systemui"
-        destroyShowSuggestionWidget()
+        assert(packageName == DISCORD_PACKAGE)
+        handleDiscordEvent(event)
+        // TODO: Auto-destroy widget if keyboard is hidden. Unfortunately, this detection mechanism
+        // is very brittle. I haven't tried https://stackoverflow.com/a/63517673 though
     }
 
     private fun handleDiscordEvent(event: AccessibilityEvent?) {
         if (event == null) return
-        val eventTypeString = AccessibilityEvent.eventTypeToString(event.eventType)
         // Show widget if we focus on an edit text
         if (event.eventType in TEXT_EDIT_FOCUS_EVENT_TYPES &&
             event.className == "android.widget.EditText" &&
@@ -77,62 +63,10 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             redrawShowSuggestionWidget(event.source!!)
             return
         }
-        // Hide widget if the event causes the keyboard to no longer be visible
-        // TODO: isKeyboardVisible isn't reliable unfortunately :/
-        // The workaround is for me to create a button to manually close the widget.
-        // But eh, scrolling around does the discord does work so let's just rely on that.
-        if (suggestionGeneratorWidget != null) {
-            Log.d(LOG_TAG, "While widget manager is visible, the event: $eventTypeString")
-            when (event.eventType) {
-                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-                    -> {
-                    val isKeyboardVisible = isKeyboardVisible()
-                    Log.d(
-                        LOG_TAG,
-                        "While widget manager is visible, isKeyboardVisible = $isKeyboardVisible, the event to destroy: $event"
-                    )
-
-                    if (!isKeyboardVisible) {
-                        destroyShowSuggestionWidget()
-                    }
-                }
-
-                else -> {
-                    Log.d(
-                        LOG_TAG,
-                        "While widget manager is visible, the event, but won't destroy: $event"
-                    )
-                }
-            }
-        }
     }
 
     override fun onInterrupt() {
         // Required override, leave empty
-    }
-
-    // TODO: Not reliable :/ Idk still an open problem.
-    private fun isKeyboardVisible(): Boolean {
-        for (window in windows) {
-            if (window.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD) {
-                /*
-                // Bounds are NOT reliable. Even when the keyboard isn't visible, we still get a
-                // normal looking bound.
-                val bounds = Rect()
-                window.getBoundsInScreen(bounds)
-                val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-
-                // Check if the keyboard occupies a significant portion of the screen
-                Log.d(
-                    LOG_TAG,
-                    "isKeyboardVisible. Height = ${bounds.height()}, Bottom = ${bounds.bottom}, Top = ${bounds.top}"
-                )
-                return bounds.height() > screenHeight / 3
-                 */
-                return true
-            }
-        }
-        return false
     }
 
     /**

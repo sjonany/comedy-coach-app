@@ -46,10 +46,11 @@ class SuggestionGeneratorWidget(
         // Draw the floating widget
         drawFloatingWidget()
 
-        // Attach listener to the show suggestion button.
-        val showSuggestionsButton = widgetView!!.findViewById<Button>(R.id.showSuggestionsButton)
-        showSuggestionsButton.setOnClickListener() {
-            Log.d(LOG_TAG, "Show suggestion button clicked")
+        // Attach listener to the buttons.
+        val generateSuggestionsButton =
+            widgetView!!.findViewById<Button>(R.id.generateSuggestionsButton)
+        generateSuggestionsButton.setOnClickListener() {
+            Log.d(LOG_TAG, "Generate suggestion button clicked")
             // Recreate the suggestion widget
             suggestionResultsWidget?.destroyWidget()
             // TODO: Get chat context, call llm etc. Create a suggestion generator class here, chat
@@ -60,6 +61,11 @@ class SuggestionGeneratorWidget(
             suggestionResultsWidget!!.showWidget()
         }
 
+        val closeButton = widgetView!!.findViewById<Button>(R.id.closeButton)
+        closeButton.setOnClickListener() {
+            Log.d(LOG_TAG, "Close button clicked")
+            destroyWidget()
+        }
     }
 
     // Draw the floating widget on the screen. There's a show suggestion button on there.
@@ -84,7 +90,7 @@ class SuggestionGeneratorWidget(
         // If I want to fix this: Maybe better to just see if keyboard is visible, and place it
         // relative to that
         params.y = 1500 - LAYOUT_DRAW_OFFSET
-        params.width = 500
+        params.width = 700
         params.height = 100
 
         Log.d(LOG_TAG, "Floating widget params: $params")
