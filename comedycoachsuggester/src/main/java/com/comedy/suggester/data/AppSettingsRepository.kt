@@ -1,4 +1,5 @@
-package com.comedy.controller.data
+package com.comedy.suggester.data
+
 import kotlinx.coroutines.flow.Flow
 
 /**

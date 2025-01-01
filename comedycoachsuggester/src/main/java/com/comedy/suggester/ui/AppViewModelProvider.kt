@@ -1,11 +1,11 @@
-package com.comedy.controller.ui
+package com.comedy.suggester.ui
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.comedy.controller.ControllerApplication
-import com.comedy.controller.ui.appsetting.AppSettingsViewModel
+import com.comedy.suggester.SuggesterApplication
+import com.comedy.suggester.ui.appsetting.AppSettingsViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire controller app
@@ -15,11 +15,11 @@ object AppViewModelProvider {
         // Initializer for AppSettingsViewModel
         initializer {
             AppSettingsViewModel(
-                controllerApplication().container.appSettingsRepository
+                suggesterApplication().container.appSettingsRepository
             )
         }
     }
 }
 
-fun CreationExtras.controllerApplication(): ControllerApplication =
-    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ControllerApplication)
+fun CreationExtras.suggesterApplication(): SuggesterApplication =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as SuggesterApplication)

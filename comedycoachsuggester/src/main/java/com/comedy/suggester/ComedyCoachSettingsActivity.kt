@@ -1,12 +1,20 @@
 package com.comedy.suggester
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
+import com.comedy.suggester.ui.appsetting.OpenAiApiKeyTextInput
+import com.comedy.suggester.ui.theme.ComedyCoachControllerTheme
 
-class ComedyCoachIMESettingsActivity : Activity() {
+class ComedyCoachSettingsActivity : ComponentActivity() {
     companion object {
         private const val LOG_TAG = "ComedyCoachIMESettingsActivity"
         private const val REQUEST_CODE_OVERLAY_PERMISSION = 1001
@@ -16,6 +24,22 @@ class ComedyCoachIMESettingsActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         Log.d(LOG_TAG, "onCreate")
+        checkHasDrawOverlayPermission();
+
+        // Draw the content
+        enableEdgeToEdge()
+        setContent {
+            ComedyCoachControllerTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    OpenAiApiKeyTextInput(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun checkHasDrawOverlayPermission() {
         // Request for permission to draw overlays - needed for ChatWatcherAccessibilityService.
         // This permission has to be requested during runtime. Ugh.
         // https://stackoverflow.com/a/46390128

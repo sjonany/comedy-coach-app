@@ -1,12 +1,12 @@
-package com.comedy.controller.ui.appsetting
+package com.comedy.suggester.ui.appsetting
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.comedy.controller.data.AppSettings
-import com.comedy.controller.data.AppSettingsRepository
+import com.comedy.suggester.data.AppSettings
+import com.comedy.suggester.data.AppSettingsRepository
 import kotlinx.coroutines.launch
 
 /**

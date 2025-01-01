@@ -1,4 +1,4 @@
-package com.comedy.controller.data
+package com.comedy.suggester.data
 
 import androidx.room.Dao
 import androidx.room.Insert

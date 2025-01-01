@@ -1,6 +1,6 @@
-package com.comedy.controller.data
+package com.comedy.suggester.data
 
-import com.comedy.controller.data.AppSettings.Companion.MAIN_ID
+import com.comedy.suggester.data.AppSettings.Companion.MAIN_ID
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Comedy Coach Controller"
-include(":comedycoachcontroller")
+rootProject.name = "Comedy Coach Suggester"
 include(":comedycoachsuggester")

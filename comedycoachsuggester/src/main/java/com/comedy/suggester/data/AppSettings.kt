@@ -1,8 +1,8 @@
-package com.comedy.controller.data
+package com.comedy.suggester.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.comedy.controller.data.AppSettings.Companion.TABLE_NAME
+import com.comedy.suggester.data.AppSettings.Companion.TABLE_NAME
 
 /**
  * Data model for all settings of this app that's persisted.

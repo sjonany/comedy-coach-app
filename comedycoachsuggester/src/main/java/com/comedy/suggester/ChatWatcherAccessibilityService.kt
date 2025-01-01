@@ -34,7 +34,7 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
                 LOG_TAG,
                 "can't draw overlays, starting settings activity"
             )
-            val intent = Intent(this, ComedyCoachIMESettingsActivity::class.java)
+            val intent = Intent(this, ComedyCoachSettingsActivity::class.java)
             startActivity(intent)
             return
         }

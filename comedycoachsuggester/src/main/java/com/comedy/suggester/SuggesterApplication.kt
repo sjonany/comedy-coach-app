@@ -1,13 +1,13 @@
-package com.comedy.controller
+package com.comedy.suggester
 
 import android.app.Application
-import com.comedy.controller.data.AppContainer
-import com.comedy.controller.data.AppDataContainer
+import com.comedy.suggester.data.AppContainer
+import com.comedy.suggester.data.AppDataContainer
 
 /**
  * I think this is for dependency injection setup?
  */
-class ControllerApplication : Application() {
+class SuggesterApplication : Application() {
 
     /**
      * AppContainer instance used by the rest of classes to obtain dependencies

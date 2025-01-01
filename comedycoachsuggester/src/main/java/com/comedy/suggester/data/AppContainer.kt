@@ -1,4 +1,4 @@
-package com.comedy.controller.data
+package com.comedy.suggester.data
 
 import android.content.Context
 

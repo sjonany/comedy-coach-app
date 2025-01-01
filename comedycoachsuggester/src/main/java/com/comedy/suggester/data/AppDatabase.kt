@@ -1,4 +1,4 @@
-package com.comedy.controller.data
+package com.comedy.suggester.data
 
 import android.content.Context
 import androidx.room.Database
@@ -11,7 +11,7 @@ import androidx.room.RoomDatabase
  */
 @Database(entities = [AppSettings::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun appSettingsDao():AppSettingsDao
+    abstract fun appSettingsDao(): AppSettingsDao
 
     companion object {
         private const val DATABASE_NAME = "comedy_coach_db"
