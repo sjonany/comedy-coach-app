@@ -1,6 +1,8 @@
-<accessibility-service android:accessibilityEventTypes="typeViewFocused"
+<!-- "typeViewClicked|typeWindowContentChanged" -->
+<accessibility-service android:accessibilityEventTypes="typeAllMask"
     android:accessibilityFeedbackType="feedbackAllMask"
     android:notificationTimeout="100"
     android:packageNames="com.discord"
     android:canRetrieveWindowContent="true"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows"
     xmlns:android="http://schemas.android.com/apk/res/android" />

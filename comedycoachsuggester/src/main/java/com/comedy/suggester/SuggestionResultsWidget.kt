@@ -14,10 +14,13 @@ import android.widget.Button
 
 
 /**
- * A widget that gets the chat context, and displays a list of suggestions.
- * Triggered by [SuggestionFloatingWidgetManager]
+ * A widget that that displays suggested responses.
+ * All the heavy lifting (e.g. parse chat context, call LLM) must already be done before creating
+ * this class.
+ * Triggered by [SuggestionGeneratorWidget]
  */
-class SuggestionResultWidgetManager(
+// TODO: In the constructor, accept the GeneratedSuggestions class
+class SuggestionResultsWidget(
     private val context: Context,
     private val rootInActiveWindow: AccessibilityNodeInfo,
     private val editTextNode: AccessibilityNodeInfo
@@ -29,7 +32,6 @@ class SuggestionResultWidgetManager(
     private var windowManager: WindowManager? = null
     private var floatingView: View? = null
 
-    // TODO: Fetch chat context, call LLM. Right now it just shows hardcoded suggestions.
     fun showWidget() {
         if (floatingView != null) return // Already shown
 
@@ -51,7 +53,7 @@ class SuggestionResultWidgetManager(
         option1.setOnClickListener { replaceText(editTextNode, "Option 1 Selected") }
         option2.setOnClickListener { replaceText(editTextNode, "Option 2 Selected") }
         option3.setOnClickListener { replaceText(editTextNode, "Option 3 Selected") }
-        finishButton.setOnClickListener { removeWidget() }
+        finishButton.setOnClickListener { destroyWidget() }
 
         val displayMetrics = context.resources.displayMetrics
         val screenHeight = displayMetrics.heightPixels // Total screen height
@@ -70,7 +72,7 @@ class SuggestionResultWidgetManager(
         // Idk something about the accessibility service giving non-trustworthy coordinates
         // If I want to fix this: Maybe better to just see if keyboard is visible, and place it there.
         // params.y = editTextBound.bottom
-        params.y = 1650 - SuggestionFloatingWidgetManager.LAYOUT_DRAW_OFFSET
+        params.y = 1650 - SuggestionGeneratorWidget.LAYOUT_DRAW_OFFSET
         params.height = screenHeight - params.y
 
         Log.d(LOG_TAG, "Floating widget params: $params")
@@ -80,7 +82,11 @@ class SuggestionResultWidgetManager(
         windowManager!!.addView(floatingView, params)
     }
 
-    fun removeWidget() {
+    /**
+     * Remove the UI component and all the memory commitments of this widget.
+     * Should be called by containing parent's onDestroy()
+     */
+    fun destroyWidget() {
         if (floatingView != null) {
             windowManager?.removeView(floatingView)
             floatingView = null
