@@ -6,6 +6,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.comedy.suggester.data.AppSettingsRepository
 
 
 /**
@@ -24,6 +25,29 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             AccessibilityEvent.TYPE_VIEW_CLICKED,
             AccessibilityEvent.TYPE_VIEW_FOCUSED,
         )
+    }
+
+    private lateinit var appSettingsRepository: AppSettingsRepository
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        appSettingsRepository =
+            (applicationContext as SuggesterApplication).container.appSettingsRepository
+
+        /*
+        // TODO: Remove this. This is just proof of concept that we can access the same roomdb that's
+        // written to by the main activity.
+        CoroutineScope(Dispatchers.Main).launch {
+            // Collect the Flow returned by getMainSettings()
+            appSettingsRepository.getMainSettings().collect { mainSettings ->
+                // Use the mainSettings here
+                Log.d(
+                    LOG_TAG,
+                    "Open ai api key: ${mainSettings?.openAiApiKey}"
+                )
+            }
+        }
+         */
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
