@@ -33,21 +33,6 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         appSettingsRepository =
             (applicationContext as SuggesterApplication).container.appSettingsRepository
-
-        /*
-        // TODO: Remove this. This is just proof of concept that we can access the same roomdb that's
-        // written to by the main activity.
-        CoroutineScope(Dispatchers.Main).launch {
-            // Collect the Flow returned by getMainSettings()
-            appSettingsRepository.getMainSettings().collect { mainSettings ->
-                // Use the mainSettings here
-                Log.d(
-                    LOG_TAG,
-                    "Open ai api key: ${mainSettings?.openAiApiKey}"
-                )
-            }
-        }
-         */
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -110,6 +95,44 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         suggestionGeneratorWidget =
             SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode)
         suggestionGeneratorWidget!!.drawWidget()
+
+        /*
+        // TODO: Remove this. This is just proof of concept that we can access the same roomdb that's
+        // written to by the main activity, and call open ai
+        CoroutineScope(Dispatchers.Main).launch {
+            // Collect the Flow returned by getMainSettings()
+            appSettingsRepository.getMainSettings().collect { mainSettings ->
+                // Use the mainSettings here
+                val openAiApiKey = mainSettings!!.openAiApiKey
+                Log.d(
+                    LOG_TAG,
+                    "Open ai api key: $openAiApiKey"
+                )
+                val openAI = OpenAI(
+                    token = openAiApiKey,
+                    logging = LoggingConfig(LogLevel.All)
+                )
+                val chatCompletionRequest = ChatCompletionRequest(
+                    model = ModelId("gpt-3.5-turbo"),
+                    messages = listOf(
+                        ChatMessage(
+                            role = ChatRole.System,
+                            content = "You are a helpful assistant that translates English to French."
+                        ),
+                        ChatMessage(
+                            role = ChatRole.User,
+                            content = "Translate the following English text to French: “OpenAI is awesome!”"
+                        )
+                    )
+                )
+                openAI.chatCompletion(chatCompletionRequest).choices.forEach {
+                    Log.d(
+                        LOG_TAG,
+                        "Open AI chat completion result: $it"
+                    )
+                }
+            }
+         */
     }
 
     /**

@@ -49,6 +49,9 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     // Room dependencies. END
 
+    implementation("com.aallam.openai:openai-client:3.8.2")
+    runtimeOnly("io.ktor:ktor-client-okhttp:2.3.2")
+
     testImplementation("com.google.truth:truth:1.4.4")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Needed to call open ai api -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Needed to draw suggestions over the keyboard. Can't use IME because it always requires
+         manual user action before switching. -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:name=".SuggesterApplication"
         android:allowBackup="true"
