@@ -124,30 +124,6 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         suggestionGeneratorWidget =
             SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode)
         suggestionGeneratorWidget!!.drawWidget()
-
-        // TODO: Remove this. This is just to show we can call open ai
-        /*
-        val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId("gpt-3.5-turbo"),
-            messages = listOf(
-                ChatMessage(
-                    role = ChatRole.System,
-                    content = "You are a helpful assistant that translates English to French."
-                ),
-                ChatMessage(
-                    role = ChatRole.User,
-                    content = "Translate the following English text to French: “OpenAI is awesome!”"
-                )
-            )
-        )
-        CoroutineScope(Dispatchers.Main).launch {
-            appContainer.openAiApiService!!.chatCompletion(chatCompletionRequest).choices.forEach {
-                Log.d(
-                    LOG_TAG,
-                    "Open AI chat completion result: $it"
-                )
-            }
-        }*/
     }
 
     /**

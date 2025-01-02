@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Comedy Coach Suggester</string>
+    <string name="generate_suggestions">Generate suggestions</string>
 </resources>

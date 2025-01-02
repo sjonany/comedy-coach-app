@@ -11,6 +11,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
+import com.comedy.suggester.generator.SuggestionResult
 
 
 /**
@@ -19,11 +20,11 @@ import android.widget.Button
  * this class.
  * Triggered by [SuggestionGeneratorWidget]
  */
-// TODO: In the constructor, accept the GeneratedSuggestions class
 class SuggestionResultsWidget(
     private val context: Context,
     private val rootInActiveWindow: AccessibilityNodeInfo,
-    private val editTextNode: AccessibilityNodeInfo
+    private val editTextNode: AccessibilityNodeInfo,
+    private val suggestionResult: SuggestionResult
 ) {
     companion object {
         private const val LOG_TAG = "SuggestionResultWidgetManager"
@@ -50,7 +51,15 @@ class SuggestionResultsWidget(
         val option3 = floatingView!!.findViewById<Button>(R.id.option3)
         val finishButton = floatingView!!.findViewById<Button>(R.id.finish)
 
-        option1.setOnClickListener { replaceText(editTextNode, "Option 1 Selected") }
+        // TODO: Build the options based on the suggestion result
+        option1.text = suggestionResult.suggestions.get(0)
+
+        option1.setOnClickListener {
+            replaceText(
+                editTextNode,
+                suggestionResult.suggestions.get(0)
+            )
+        }
         option2.setOnClickListener { replaceText(editTextNode, "Option 2 Selected") }
         option3.setOnClickListener { replaceText(editTextNode, "Option 3 Selected") }
         finishButton.setOnClickListener { destroyWidget() }

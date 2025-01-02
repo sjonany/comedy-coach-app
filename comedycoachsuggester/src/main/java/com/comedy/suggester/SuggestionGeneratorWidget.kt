@@ -11,6 +11,10 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import com.comedy.suggester.chatparser.ChatMessages
 import com.comedy.suggester.chatparser.DiscordChatParser
+import com.comedy.suggester.generator.OpenAiSuggestionGenerator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /**
@@ -38,6 +42,13 @@ class SuggestionGeneratorWidget(
 
     // the widget that when clicked, will trigger suggestion generation.
     private var widgetView: View? = null
+    private val suggestionGenerator =
+        OpenAiSuggestionGenerator((context.applicationContext as SuggesterApplication).container.openAiApiService!!)
+
+    // Whether or not we're waiting for suggestion generation to happen. Only at most one can be
+    // active at any time
+    @Volatile
+    private var isGenerating = false
 
     /**
      * Draws the widget on the screen, and attach a click listener.
@@ -50,10 +61,23 @@ class SuggestionGeneratorWidget(
         drawFloatingWidget()
 
         // Attach listener to the buttons.
+        val closeButton = widgetView!!.findViewById<Button>(R.id.closeButton)
+        closeButton.setOnClickListener() {
+            Log.d(LOG_TAG, "Close button clicked")
+            destroyWidget()
+        }
         val generateSuggestionsButton =
             widgetView!!.findViewById<Button>(R.id.generateSuggestionsButton)
         generateSuggestionsButton.setOnClickListener() {
             Log.d(LOG_TAG, "Generate suggestion button clicked")
+
+            if (isGenerating) {
+                Log.d(LOG_TAG, "Still waiting for suggestion generation...")
+                return@setOnClickListener
+            }
+            generateSuggestionsButton.setText("Generating...")
+            isGenerating = true
+
             // Recreate the suggestion widget
             suggestionResultsWidget?.destroyWidget()
 
@@ -62,17 +86,27 @@ class SuggestionGeneratorWidget(
                 discordChatParser.parseChatFromRootNode(rootInActiveWindow)
             Log.d(LOG_TAG, "Parsed discord chat messages: $chatMessages")
 
-            // TODO: Call LLM to generate suggestions.
-            // Only when the heavy lifting is done with do we proceed w/ calling the result manager
-            suggestionResultsWidget =
-                SuggestionResultsWidget(context, rootInActiveWindow, textEditNode)
-            suggestionResultsWidget!!.showWidget()
-        }
-
-        val closeButton = widgetView!!.findViewById<Button>(R.id.closeButton)
-        closeButton.setOnClickListener() {
-            Log.d(LOG_TAG, "Close button clicked")
-            destroyWidget()
+            // Generate responses using LLM
+            CoroutineScope(Dispatchers.Main).launch {
+                val suggestions = suggestionGenerator.generateSuggestions(chatMessages)
+                if (suggestions != null) {
+                    Log.d(
+                        LOG_TAG,
+                        "Generated suggestions: $suggestions"
+                    )
+                    // Only when the heavy lifting is done with do we proceed w/ calling the result manager
+                    suggestionResultsWidget =
+                        SuggestionResultsWidget(
+                            context,
+                            rootInActiveWindow,
+                            textEditNode,
+                            suggestions
+                        )
+                    suggestionResultsWidget!!.showWidget()
+                }
+                generateSuggestionsButton.setText(R.string.generate_suggestions)
+                isGenerating = false
+            }
         }
     }
 
