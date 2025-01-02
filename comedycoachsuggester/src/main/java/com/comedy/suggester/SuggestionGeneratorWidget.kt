@@ -9,6 +9,8 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
+import com.comedy.suggester.chatparser.ChatMessages
+import com.comedy.suggester.chatparser.DiscordChatParser
 
 
 /**
@@ -32,6 +34,7 @@ class SuggestionGeneratorWidget(
 
     private var suggestionResultsWidget: SuggestionResultsWidget? = null
     private var windowManager: WindowManager? = null
+    private val discordChatParser: DiscordChatParser = DiscordChatParser()
 
     // the widget that when clicked, will trigger suggestion generation.
     private var widgetView: View? = null
@@ -53,8 +56,13 @@ class SuggestionGeneratorWidget(
             Log.d(LOG_TAG, "Generate suggestion button clicked")
             // Recreate the suggestion widget
             suggestionResultsWidget?.destroyWidget()
-            // TODO: Get chat context, call llm etc. Create a suggestion generator class here, chat
-            // parsing context etc. Optionally turn into a loading gear
+
+            // Parse chat
+            val chatMessages: ChatMessages =
+                discordChatParser.parseChatFromRootNode(rootInActiveWindow)
+            Log.d(LOG_TAG, "Parsed discord chat messages: $chatMessages")
+
+            // TODO: Call LLM to generate suggestions.
             // Only when the heavy lifting is done with do we proceed w/ calling the result manager
             suggestionResultsWidget =
                 SuggestionResultsWidget(context, rootInActiveWindow, textEditNode)

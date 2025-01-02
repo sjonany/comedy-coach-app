@@ -6,11 +6,23 @@ import java.time.LocalDateTime
  * All apps' chats get parsed to this class.
  */
 class ChatMessages {
-    private val messages: MutableList<ChatMessage> = mutableListOf()
+    private val messages: MutableList<ChatMessage>
 
-    fun addMessage(sender: String, message: String, timestamp: LocalDateTime) {
+    constructor() {
+        messages = mutableListOf()
+    }
+
+    constructor(initialMessages: List<ChatMessage>) {
+        messages = initialMessages.toMutableList()
+    }
+
+    fun addMessage(sender: String, message: String, timestamp: LocalDateTime?) {
         val chatMessage = ChatMessage(sender, message, timestamp)
         messages.add(chatMessage)
+    }
+
+    fun getMessages(): List<ChatMessage> {
+        return messages.toList()
     }
 
     fun getMessage(index: Int): ChatMessage? {
@@ -50,5 +62,5 @@ class ChatMessages {
 data class ChatMessage(
     val sender: String,
     val message: String,
-    val timestamp: LocalDateTime
+    val timestamp: LocalDateTime?
 )
