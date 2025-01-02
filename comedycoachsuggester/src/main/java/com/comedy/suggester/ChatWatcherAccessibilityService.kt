@@ -6,7 +6,10 @@ import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.comedy.suggester.data.AppSettingsRepository
+import com.comedy.suggester.data.AppContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /**
@@ -27,15 +30,41 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         )
     }
 
-    private lateinit var appSettingsRepository: AppSettingsRepository
+    /* Global dependencies. */
+    private lateinit var appContainer: AppContainer
+
+    /* All event processing must not run until the service is ready - e.g. read api key */
+    @Volatile
+    private var isServiceReady: Boolean = false
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        appSettingsRepository =
-            (applicationContext as SuggesterApplication).container.appSettingsRepository
+        appContainer =
+            (applicationContext as SuggesterApplication).container
+
+        // Fully initialize app dependencies. Until this is done, event processing can't start
+        CoroutineScope(Dispatchers.Main).launch {
+            appContainer.appSettingsRepository.getMainSettings().collect { mainSettings ->
+                val openAiApiKey = mainSettings!!.openAiApiKey
+                appContainer.initializeOpenAiApiService(openAiApiKey)
+                isServiceReady = true
+                Log.d(
+                    LOG_TAG,
+                    "Service is initialized"
+                )
+            }
+        }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (!isServiceReady) {
+            Log.d(
+                LOG_TAG,
+                "Still initializing service. Dropping event for now"
+            )
+            return
+        }
+
         if (event == null) return
         // Need overlay permission first. The settings activity handles all these
         if (!Settings.canDrawOverlays(this)) {
@@ -96,43 +125,29 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode)
         suggestionGeneratorWidget!!.drawWidget()
 
+        // TODO: Remove this. This is just to show we can call open ai
         /*
-        // TODO: Remove this. This is just proof of concept that we can access the same roomdb that's
-        // written to by the main activity, and call open ai
+        val chatCompletionRequest = ChatCompletionRequest(
+            model = ModelId("gpt-3.5-turbo"),
+            messages = listOf(
+                ChatMessage(
+                    role = ChatRole.System,
+                    content = "You are a helpful assistant that translates English to French."
+                ),
+                ChatMessage(
+                    role = ChatRole.User,
+                    content = "Translate the following English text to French: “OpenAI is awesome!”"
+                )
+            )
+        )
         CoroutineScope(Dispatchers.Main).launch {
-            // Collect the Flow returned by getMainSettings()
-            appSettingsRepository.getMainSettings().collect { mainSettings ->
-                // Use the mainSettings here
-                val openAiApiKey = mainSettings!!.openAiApiKey
+            appContainer.openAiApiService!!.chatCompletion(chatCompletionRequest).choices.forEach {
                 Log.d(
                     LOG_TAG,
-                    "Open ai api key: $openAiApiKey"
+                    "Open AI chat completion result: $it"
                 )
-                val openAI = OpenAI(
-                    token = openAiApiKey,
-                    logging = LoggingConfig(LogLevel.All)
-                )
-                val chatCompletionRequest = ChatCompletionRequest(
-                    model = ModelId("gpt-3.5-turbo"),
-                    messages = listOf(
-                        ChatMessage(
-                            role = ChatRole.System,
-                            content = "You are a helpful assistant that translates English to French."
-                        ),
-                        ChatMessage(
-                            role = ChatRole.User,
-                            content = "Translate the following English text to French: “OpenAI is awesome!”"
-                        )
-                    )
-                )
-                openAI.chatCompletion(chatCompletionRequest).choices.forEach {
-                    Log.d(
-                        LOG_TAG,
-                        "Open AI chat completion result: $it"
-                    )
-                }
             }
-         */
+        }*/
     }
 
     /**
