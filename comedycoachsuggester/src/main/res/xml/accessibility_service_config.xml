@@ -1,5 +1,5 @@
 <!-- "typeViewClicked|typeWindowContentChanged" -->
-<accessibility-service android:accessibilityEventTypes="typeViewClicked|typeViewFocused"
+<accessibility-service android:accessibilityEventTypes="typeViewClicked|typeViewFocused|typeViewTextChanged"
     android:accessibilityFeedbackType="feedbackAllMask"
     android:notificationTimeout="100"
     android:packageNames="com.discord"

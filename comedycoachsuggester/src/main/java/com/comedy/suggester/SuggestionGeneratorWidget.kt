@@ -50,6 +50,10 @@ class SuggestionGeneratorWidget(
     @Volatile
     private var isGenerating = false
 
+    // User hint is continuously updated by ChatWatcherAccessibilityService
+    // Can't just fetch from the original edit text node because that view is out of date
+    var userHint: String = ""
+
     /**
      * Draws the widget on the screen, and attach a click listener.
      * This should only be called once per class instance, during construction.
@@ -85,13 +89,11 @@ class SuggestionGeneratorWidget(
             val chatMessages: ChatMessages =
                 discordChatParser.parseChatFromRootNode(rootInActiveWindow)
             Log.d(LOG_TAG, "Parsed discord chat messages: $chatMessages")
-            // TODO: Unfortunately this isn't up to date. I think I need to re-fetch
-            val userHint = textEditNode.text
 
             // Generate responses using LLM
             CoroutineScope(Dispatchers.Main).launch {
                 val suggestions =
-                    suggestionGenerator.generateSuggestions(chatMessages, userHint.toString())
+                    suggestionGenerator.generateSuggestions(chatMessages, userHint)
                 if (suggestions != null) {
                     Log.d(
                         LOG_TAG,

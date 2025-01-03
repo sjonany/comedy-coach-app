@@ -93,13 +93,17 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
 
     private fun handleDiscordEvent(event: AccessibilityEvent?) {
         if (event == null) return
-        // Show widget if we focus on an edit text
-        if (event.eventType in TEXT_EDIT_FOCUS_EVENT_TYPES &&
-            event.className == "android.widget.EditText" &&
+
+        if (event.className == "android.widget.EditText" &&
             event.source != null
         ) {
-            redrawShowSuggestionWidget(event.source!!)
-            return
+            if (event.eventType in TEXT_EDIT_FOCUS_EVENT_TYPES) {
+                redrawShowSuggestionWidget(event.source!!)
+                return
+            } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
+                suggestionGeneratorWidget?.userHint = event.source?.text.toString()
+                Log.d(LOG_TAG, "User hint updated to ${suggestionGeneratorWidget?.userHint}")
+            }
         }
     }
 
