@@ -6,6 +6,8 @@ import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.comedy.suggester.chatparser.ChatParser
+import com.comedy.suggester.chatparser.ChatParserFactory
 import com.comedy.suggester.data.AppContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +23,17 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val LOG_TAG = "ChatWatcherAccessibilityService"
-        private const val DISCORD_PACKAGE = "com.discord"
+        const val DISCORD_PACKAGE = "com.discord"
+        const val WHATSAPP_PACKAGE = "com.whatsapp"
 
         // Event types that indicate that the user clicked on an edit text field
         private val TEXT_EDIT_FOCUS_EVENT_TYPES = setOf(
             AccessibilityEvent.TYPE_VIEW_CLICKED,
             AccessibilityEvent.TYPE_VIEW_FOCUSED,
+        )
+
+        private val HANDLED_PACKAGES = setOf(
+            DISCORD_PACKAGE, WHATSAPP_PACKAGE
         )
     }
 
@@ -66,6 +73,15 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         }
 
         if (event == null) return
+
+        val eventTypeString = AccessibilityEvent.eventTypeToString(event.eventType)
+        val packageName = event.packageName?.toString() ?: return
+
+        Log.d(
+            LOG_TAG,
+            "got event: $eventTypeString, $packageName"
+        )
+
         // Need overlay permission first. The settings activity handles all these
         if (!Settings.canDrawOverlays(this)) {
             Log.d(
@@ -76,35 +92,25 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             startActivity(intent)
             return
         }
+        if (!HANDLED_PACKAGES.contains(packageName)) {
+            return
+        }
 
-        val eventTypeString = AccessibilityEvent.eventTypeToString(event.eventType)
-        val packageName = event.packageName?.toString()
-
-        Log.d(
-            LOG_TAG,
-            "got event: $eventTypeString, $packageName"
-        )
-
-        assert(packageName == DISCORD_PACKAGE)
-        handleDiscordEvent(event)
-        // TODO: Auto-destroy widget if keyboard is hidden. Unfortunately, this detection mechanism
-        // is very brittle. I haven't tried https://stackoverflow.com/a/63517673 though
-    }
-
-    private fun handleDiscordEvent(event: AccessibilityEvent?) {
-        if (event == null) return
-
+        val chatParser = ChatParserFactory.getChatParser(packageName)
         if (event.className == "android.widget.EditText" &&
             event.source != null
         ) {
             if (event.eventType in TEXT_EDIT_FOCUS_EVENT_TYPES) {
-                redrawShowSuggestionWidget(event.source!!)
+                redrawShowSuggestionWidget(event.source!!, chatParser)
                 return
             } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
                 suggestionGeneratorWidget?.userHint = event.source?.text.toString()
                 Log.d(LOG_TAG, "User hint updated to ${suggestionGeneratorWidget?.userHint}")
             }
         }
+
+        // TODO: Auto-destroy widget if keyboard is hidden. Unfortunately, this detection mechanism
+        // is very brittle. I haven't tried https://stackoverflow.com/a/63517673 though
     }
 
     override fun onInterrupt() {
@@ -122,11 +128,14 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
      * - If user focuses on a different chat context, then we want to recreate the show-suggestion
      * widget from scratch, because it's tied to a specific text edit node.
      */
-    private fun redrawShowSuggestionWidget(textEditNode: AccessibilityNodeInfo) {
+    private fun redrawShowSuggestionWidget(
+        textEditNode: AccessibilityNodeInfo,
+        chatParser: ChatParser
+    ) {
         Log.d(LOG_TAG, "redrawShowSuggestionWidget")
         suggestionGeneratorWidget?.destroyWidget()
         suggestionGeneratorWidget =
-            SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode)
+            SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode, chatParser)
         suggestionGeneratorWidget!!.drawWidget()
     }
 

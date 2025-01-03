@@ -5,15 +5,13 @@ import android.view.accessibility.AccessibilityNodeInfo
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.util.LinkedList
 import java.util.Locale
-import java.util.Queue
 
 /**
  * Parser for discord chat.
  * The input is an accessibility root node from an event triggered in a discord chat.
  */
-class DiscordChatParser {
+class DiscordChatParser : ChatParser {
     companion object {
         private const val LOG_TAG = "DiscordChatParser"
     }
@@ -22,7 +20,7 @@ class DiscordChatParser {
      * Given rootInActiveWindow, which is the snapshot from
      * [ChatWatcherAccessibilityService].onAccessibilityEvent, parse the chat messages
      */
-    fun parseChatFromRootNode(rootInActiveWindow: AccessibilityNodeInfo): ChatMessages {
+    override fun parseChatFromRootNode(rootInActiveWindow: AccessibilityNodeInfo): ChatMessages {
         val rawTexts: List<String> = getRawTextsFromNode(rootInActiveWindow)
         return parseRawTexts(rawTexts, LocalDateTime.now())
     }
@@ -217,47 +215,4 @@ class DiscordChatParser {
         }
         return rawTexts.toList()
     }
-
-    /**
-     * Level order traversal to find the first child w/ targetClass
-     */
-    private fun findFirstNodeWithClassName(
-        rootInActiveWindow: AccessibilityNodeInfo,
-        targetClass: String
-    ): AccessibilityNodeInfo? {
-        val queue: Queue<AccessibilityNodeInfo> = LinkedList()
-        queue.add(rootInActiveWindow)
-
-        while (queue.isNotEmpty()) {
-            val currentNode = queue.poll()
-
-            if (currentNode!!.className == targetClass) {
-                return currentNode
-            }
-
-            for (i in 0 until currentNode.childCount) {
-                val child = currentNode.getChild(i)
-                if (child != null) {
-                    queue.add(child)
-                }
-            }
-        }
-        return null
-    }
-
-    /**
-     * Helper function to debug UI tree.
-     */
-    fun logNodeTree(node: AccessibilityNodeInfo?, depth: Int = 0) {
-        if (node == null) return
-        val prefix = " ".repeat(depth * 2)
-        Log.d(
-            LOG_TAG,
-            "$prefix Class: ${node.className}, Text: ${node.text}, ContentDesc: ${node.contentDescription}"
-        )
-        for (i in 0 until node.childCount) {
-            logNodeTree(node.getChild(i), depth + 1)
-        }
-    }
-
 }

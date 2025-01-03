@@ -10,7 +10,7 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import com.comedy.suggester.chatparser.ChatMessages
-import com.comedy.suggester.chatparser.DiscordChatParser
+import com.comedy.suggester.chatparser.ChatParser
 import com.comedy.suggester.generator.OpenAiSuggestionGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 class SuggestionGeneratorWidget(
     private val context: Context,
     private val rootInActiveWindow: AccessibilityNodeInfo,
-    private val textEditNode: AccessibilityNodeInfo
+    private val textEditNode: AccessibilityNodeInfo,
+    private val chatParser: ChatParser,
 ) {
 
     companion object {
@@ -38,7 +39,6 @@ class SuggestionGeneratorWidget(
 
     private var suggestionResultsWidget: SuggestionResultsWidget? = null
     private var windowManager: WindowManager? = null
-    private val discordChatParser: DiscordChatParser = DiscordChatParser()
 
     // the widget that when clicked, will trigger suggestion generation.
     private var widgetView: View? = null
@@ -87,8 +87,8 @@ class SuggestionGeneratorWidget(
 
             // Parse chat
             val chatMessages: ChatMessages =
-                discordChatParser.parseChatFromRootNode(rootInActiveWindow)
-            Log.d(LOG_TAG, "Parsed discord chat messages: $chatMessages")
+                chatParser.parseChatFromRootNode(rootInActiveWindow)
+            Log.d(LOG_TAG, "Parsed chat messages: $chatMessages")
 
             // Generate responses using LLM
             CoroutineScope(Dispatchers.Main).launch {

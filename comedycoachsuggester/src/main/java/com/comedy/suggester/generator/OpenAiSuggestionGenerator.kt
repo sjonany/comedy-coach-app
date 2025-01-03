@@ -63,6 +63,11 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
             curTok = curTok.removePrefix(SUGGESTION_PREFIX).trim()
             result.add(curTok)
         }
+
+        if (result.isEmpty()) {
+            // Sometimes the LLM just gives a one-element suggestion.
+            result.add(llmResponse.trim())
+        }
         return result
     }
 
