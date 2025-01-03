@@ -101,8 +101,22 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             event.source != null
         ) {
             if (event.eventType in TEXT_EDIT_FOCUS_EVENT_TYPES) {
-                redrawShowSuggestionWidget(event.source!!, chatParser)
-                return
+                val editTextString = event.text[0].toString()
+                if (packageName == DISCORD_PACKAGE) {
+                    // This is a workaround to filter for the right edit field.
+                    // E.g. we don't want to trigger this on the edittext for emojis
+                    // Unfortunately if the edit text field has been edited then this won't trigger
+                    // But that's not too bad. User can just erase and redo.
+                    if (editTextString.startsWith("Message")) {
+                        redrawShowSuggestionWidget(event.source!!, chatParser)
+                        return
+                    }
+                } else if (packageName == WHATSAPP_PACKAGE) {
+                    if (editTextString.startsWith("Message")) {
+                        redrawShowSuggestionWidget(event.source!!, chatParser)
+                        return
+                    }
+                }
             } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
                 suggestionGeneratorWidget?.userHint = event.source?.text.toString()
                 Log.d(LOG_TAG, "User hint updated to ${suggestionGeneratorWidget?.userHint}")
