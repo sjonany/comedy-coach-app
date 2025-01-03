@@ -15,12 +15,18 @@ import com.comedy.suggester.chatparser.ChatMessages
 class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
     companion object {
         private const val LOG_TAG = "OpenAiSuggestionGenerator"
-        private const val LLM_MODEL = "gpt-3.5-turbo"
+
+        // See https://platform.openai.com/docs/models
+        private const val LLM_MODEL = "gpt-4-turbo"
+        //"gpt-3.5-turbo"
     }
 
-    override suspend fun generateSuggestions(chatMessages: ChatMessages): SuggestionResult? {
+    override suspend fun generateSuggestions(
+        chatMessages: ChatMessages,
+        userHint: String
+    ): SuggestionResult? {
         // Construct prompt
-        val llmRequest = createLlmRequest(chatMessages)
+        val llmRequest = createLlmRequest(chatMessages, userHint)
 
         // Ask LLM
         val chatChoices: List<ChatChoice> = apiClient.chatCompletion(llmRequest).choices
@@ -60,8 +66,8 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         return result
     }
 
-    fun createLlmRequest(chatMessages: ChatMessages): ChatCompletionRequest {
-        val prompt = chatMessagesToPrompt(chatMessages)
+    fun createLlmRequest(chatMessages: ChatMessages, userHint: String): ChatCompletionRequest {
+        val prompt = chatMessagesToPrompt(chatMessages, userHint)
         val chatCompletionRequest = ChatCompletionRequest(
             model = ModelId(LLM_MODEL),
             messages = listOf(
@@ -77,7 +83,7 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         return chatCompletionRequest
     }
 
-    internal fun chatMessagesToPrompt(chatMessages: ChatMessages): String {
+    internal fun chatMessagesToPrompt(chatMessages: ChatMessages, userHint: String): String {
         chatMessages.obfuscateSenders()
         val chatMessagePromptPart =
             chatMessages.getMessages().joinToString(separator = "\n") { message ->
@@ -87,6 +93,9 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         return "Please suggest 5 funny responses to this chat history, " +
                 "with hyphen as bullet points and separated by newline " +
                 "(E.g. - Content1\n - Content2). " +
-                "Chat history:\n$chatMessagePromptPart"
+                if (userHint.trim()
+                        .isEmpty()
+                ) "" else "Also, $userHint.\n" +
+                        "Chat history:\n$chatMessagePromptPart"
     }
 }

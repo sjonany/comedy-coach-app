@@ -85,10 +85,13 @@ class SuggestionGeneratorWidget(
             val chatMessages: ChatMessages =
                 discordChatParser.parseChatFromRootNode(rootInActiveWindow)
             Log.d(LOG_TAG, "Parsed discord chat messages: $chatMessages")
+            // TODO: Unfortunately this isn't up to date. I think I need to re-fetch
+            val userHint = textEditNode.text
 
             // Generate responses using LLM
             CoroutineScope(Dispatchers.Main).launch {
-                val suggestions = suggestionGenerator.generateSuggestions(chatMessages)
+                val suggestions =
+                    suggestionGenerator.generateSuggestions(chatMessages, userHint.toString())
                 if (suggestions != null) {
                     Log.d(
                         LOG_TAG,

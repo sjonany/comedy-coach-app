@@ -4,7 +4,7 @@ import com.comedy.suggester.chatparser.ChatMessages
 
 // Generates suggestions given chat context
 interface SuggestionGenerator {
-    suspend fun generateSuggestions(chatMessages: ChatMessages): SuggestionResult?
+    suspend fun generateSuggestions(chatMessages: ChatMessages, userHint: String): SuggestionResult?
 }
 
 // Suggestion result. Contains the suggestions and metadata on how they were generated

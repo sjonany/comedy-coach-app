@@ -29,10 +29,12 @@ class OpenAiSuggestionGeneratorTest {
         chatList.addMessage("Alice", "Hello, everyone!", time)
         chatList.addMessage("Bob", "Hi Alice!", time)
 
-        val prompt = generator.chatMessagesToPrompt(chatList)
+        val prompt = generator.chatMessagesToPrompt(chatList, "make it punny")
         assertThat(prompt).isEqualTo(
             "Please suggest 5 funny responses to this chat history, " +
-                    "with hyphen as bullet points and separated by newline (E.g. - Content1\n - Content2). Chat history:\n" +
+                    "with hyphen as bullet points and separated by newline (E.g. - Content1\n - Content2). " +
+                    "Also, make it punny.\n" +
+                    "Chat history:\n" +
                     "Person 0: Hello, everyone!\n" +
                     "Person 1: Hi Alice!"
         )
