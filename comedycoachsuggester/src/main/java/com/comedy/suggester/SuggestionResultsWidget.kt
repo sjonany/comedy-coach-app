@@ -11,6 +11,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
+import android.widget.LinearLayout
 import com.comedy.suggester.generator.SuggestionResult
 
 
@@ -45,24 +46,22 @@ class SuggestionResultsWidget(
         if (floatingView == null)
             return
 
-        // Set listeners for the buttons
-        val option1 = floatingView!!.findViewById<Button>(R.id.option1)
-        val option2 = floatingView!!.findViewById<Button>(R.id.option2)
-        val option3 = floatingView!!.findViewById<Button>(R.id.option3)
-        val finishButton = floatingView!!.findViewById<Button>(R.id.finish)
+        val linearLayout = floatingView!!.findViewById<LinearLayout>(R.id.linearLayout)
 
-        // TODO: Build the options based on the suggestion result
-        option1.text = suggestionResult.suggestions.get(0)
-
-        option1.setOnClickListener {
-            replaceText(
-                editTextNode,
-                suggestionResult.suggestions.get(0)
-            )
+        // Dynamically add buttons for each suggestion
+        linearLayout.removeAllViews()
+        suggestionResult.suggestions.forEachIndexed { index, suggestion ->
+            val button = Button(context)
+            button.text = suggestion
+            button.setOnClickListener {
+                replaceText(editTextNode, suggestion)
+            }
+            linearLayout.addView(button)
         }
-        option2.setOnClickListener { replaceText(editTextNode, "Option 2 Selected") }
-        option3.setOnClickListener { replaceText(editTextNode, "Option 3 Selected") }
-        finishButton.setOnClickListener { destroyWidget() }
+        val closeButton = Button(context)
+        closeButton.text = "Back to keyboard"
+        closeButton.setOnClickListener { destroyWidget() }
+        linearLayout.addView(closeButton)
 
         val displayMetrics = context.resources.displayMetrics
         val screenHeight = displayMetrics.heightPixels // Total screen height
@@ -74,6 +73,7 @@ class SuggestionResultsWidget(
             PixelFormat.TRANSLUCENT
         )
 
+        // Situate the widget at the bottom of the screen
         params.gravity = Gravity.TOP or Gravity.START
         params.x = 0
         val editTextBound = Rect()
