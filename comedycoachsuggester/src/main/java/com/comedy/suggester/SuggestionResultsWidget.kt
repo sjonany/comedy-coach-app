@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.comedy.suggester.generator.SuggestionResult
 
 
@@ -62,6 +63,15 @@ class SuggestionResultsWidget(
         closeButton.text = "Back to keyboard"
         closeButton.setOnClickListener { destroyWidget() }
         linearLayout.addView(closeButton)
+
+        if (Config.IS_DEBUG) {
+            val promptDebugText = TextView(context)
+            promptDebugText.setText(
+                "Model: ${suggestionResult.generationMetadata.modelName}\n" +
+                        suggestionResult.generationMetadata.prompt
+            )
+            linearLayout.addView(promptDebugText)
+        }
 
         val displayMetrics = context.resources.displayMetrics
         val screenHeight = displayMetrics.heightPixels // Total screen height

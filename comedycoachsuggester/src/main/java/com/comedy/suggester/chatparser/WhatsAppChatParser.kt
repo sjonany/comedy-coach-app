@@ -17,7 +17,7 @@ class WhatsAppChatParser : ChatParser {
 
     override fun parseChatFromRootNode(rootInActiveWindow: AccessibilityNodeInfo): ChatMessages {
         Log.d(LOG_TAG, "parseChatFromRootNode")
-
+        logNodeTree(rootInActiveWindow)
         val chatParent = findFirstNodeWithClassName(
             rootInActiveWindow,
             "android.widget.ListView"
@@ -61,8 +61,8 @@ class WhatsAppChatParser : ChatParser {
             }
         }
         when (textViews.size) {
-            0 -> return null
-            1 -> return ChatMessage(sender, textViews[0].text.toString(), null)
+            // It's possible to have a single textView containing the time if it's an image.
+            0, 1 -> return null
             // Last text is usually the time. And sometimes the first text is as a header like "Today"
             // but is clumped into this view group
             else -> return ChatMessage(sender, textViews[textViews.size - 2].text.toString(), null)

@@ -16,5 +16,7 @@ data class SuggestionResult(
 // Metadata on how the suggestions were generated
 data class GenerationMetadata(
     // The llm model used for this generation
-    val modelName: String
+    val modelName: String,
+    // The prompt used for the generation
+    val prompt: String
 )

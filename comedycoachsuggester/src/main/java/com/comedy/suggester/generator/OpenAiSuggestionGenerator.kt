@@ -7,6 +7,7 @@ import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.comedy.suggester.Config
 import com.comedy.suggester.chatparser.ChatMessages
 
 /**
@@ -16,9 +17,6 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
     companion object {
         private const val LOG_TAG = "OpenAiSuggestionGenerator"
 
-        // See https://platform.openai.com/docs/models
-        private const val LLM_MODEL = "gpt-4-turbo"
-        //"gpt-3.5-turbo"
     }
 
     override suspend fun generateSuggestions(
@@ -26,7 +24,8 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         userHint: String
     ): SuggestionResult? {
         // Construct prompt
-        val llmRequest = createLlmRequest(chatMessages, userHint)
+        val prompt = chatMessagesToPrompt(chatMessages, userHint)
+        val llmRequest = createLlmRequest(prompt)
 
         // Ask LLM
         val chatChoices: List<ChatChoice> = apiClient.chatCompletion(llmRequest).choices
@@ -34,13 +33,14 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         if (chatChoices.isEmpty()) {
             return null
         }
+
         // Just use the first chat choice for now
         val llmResponse = chatChoices[0].message.content ?: return null
         val suggestions = parseLlmResponse(llmResponse)
         if (suggestions.isEmpty()) {
             return null
         }
-        return SuggestionResult(suggestions, GenerationMetadata(LLM_MODEL))
+        return SuggestionResult(suggestions, GenerationMetadata(Config.LLM_MODEL, prompt))
     }
 
     val SUGGESTION_PREFIX = "-"
@@ -71,10 +71,9 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         return result
     }
 
-    fun createLlmRequest(chatMessages: ChatMessages, userHint: String): ChatCompletionRequest {
-        val prompt = chatMessagesToPrompt(chatMessages, userHint)
+    private fun createLlmRequest(prompt: String): ChatCompletionRequest {
         val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId(LLM_MODEL),
+            model = ModelId(Config.LLM_MODEL),
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.User,
