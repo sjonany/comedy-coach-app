@@ -16,9 +16,8 @@ class ChatMessages {
         messages = initialMessages.toMutableList()
     }
 
-    fun addMessage(sender: String, message: String, timestamp: LocalDateTime?) {
-        val chatMessage = ChatMessage(sender, message, timestamp)
-        messages.add(chatMessage)
+    fun addMessage(message: ChatMessage) {
+        messages.add(message)
     }
 
     fun getMessages(): List<ChatMessage> {

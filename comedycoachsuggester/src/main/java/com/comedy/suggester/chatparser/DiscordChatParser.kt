@@ -10,6 +10,7 @@ import java.util.Locale
 /**
  * Parser for discord chat.
  * The input is an accessibility root node from an event triggered in a discord chat.
+ * TODO: Handle group chat. Right now this only handles 1-1
  */
 class DiscordChatParser : ChatParser {
     companion object {
@@ -109,7 +110,7 @@ class DiscordChatParser : ChatParser {
             if (message.isEmpty()) {
                 continue
             }
-            parsedMessages.addMessage(name, message, mostRecentTimeSeen)
+            parsedMessages.addMessage(ChatMessage(name, message, mostRecentTimeSeen))
         }
 
         // Convert aliases to the time-marked name
@@ -202,11 +203,12 @@ class DiscordChatParser : ChatParser {
         )
         if (firstRecyclerView == null) {
             Log.d(LOG_TAG, "can't find first recycler view")
+            return listOf()
         }
 
         val rawTexts: MutableList<String> = mutableListOf()
 
-        for (i in 0 until firstRecyclerView!!.childCount) {
+        for (i in 0 until firstRecyclerView.childCount) {
             val child = firstRecyclerView.getChild(i)
             if (child.className != "android.widget.RelativeLayout" || child.text == null) {
                 continue

@@ -98,9 +98,10 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         return "Please suggest 5 funny responses to this chat history, " +
                 "with hyphen as bullet points and separated by newline " +
                 "(E.g. - Content1\n - Content2). " +
-                if (userHint.trim()
+                (if (userHint.trim()
                         .isEmpty()
-                ) "" else "Also, $userHint.\n" +
-                        "Chat history:\n$chatMessagePromptPart"
+                ) "" else "Also, $userHint.\n") +
+                "Do NOT include the person name in your response.\n" +
+                "Chat history:\n$chatMessagePromptPart"
     }
 }

@@ -1,6 +1,7 @@
 package com.comedy.suggester.generator
 
 import com.aallam.openai.client.OpenAI
+import com.comedy.suggester.chatparser.ChatMessage
 import com.comedy.suggester.chatparser.ChatMessages
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -26,17 +27,22 @@ class OpenAiSuggestionGeneratorTest {
         val time: LocalDateTime = LocalDateTime.of(2024, 12, 1, 1, 0, 1, 0)
 
         // Add test messages
-        chatList.addMessage("Alice", "Hello, everyone!", time)
-        chatList.addMessage("Bob", "Hi Alice!", time)
+        addMessage(chatList, "Alice", "Hello, everyone!", time)
+        addMessage(chatList, "Bob", "Hi Alice!", time)
 
         val prompt = generator.chatMessagesToPrompt(chatList, "make it punny")
         assertThat(prompt).isEqualTo(
             "Please suggest 5 funny responses to this chat history, " +
                     "with hyphen as bullet points and separated by newline (E.g. - Content1\n - Content2). " +
                     "Also, make it punny.\n" +
+                    "Do NOT include the person name in your response.\n" +
                     "Chat history:\n" +
                     "Person 0: Hello, everyone!\n" +
                     "Person 1: Hi Alice!"
         )
+    }
+
+    fun addMessage(chatList: ChatMessages, sender: String, message: String, time: LocalDateTime) {
+        chatList.addMessage(ChatMessage(sender, message, time))
     }
 }
