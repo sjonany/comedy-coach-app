@@ -26,11 +26,8 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         const val DISCORD_PACKAGE = "com.discord"
         const val WHATSAPP_PACKAGE = "com.whatsapp"
 
-        // Event types that indicate that the user clicked on an edit text field
-        private val TEXT_EDIT_FOCUS_EVENT_TYPES = setOf(
-            AccessibilityEvent.TYPE_VIEW_CLICKED,
-            AccessibilityEvent.TYPE_VIEW_FOCUSED,
-        )
+        // If the user types this sequence, then the generator widget will show up.
+        const val TURN_ON_PREFIX = "Qw"
 
         private val HANDLED_PACKAGES = setOf(
             DISCORD_PACKAGE, WHATSAPP_PACKAGE
@@ -98,28 +95,22 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
 
         val chatParser = ChatParserFactory.getChatParser(packageName)
         if (event.className == "android.widget.EditText" &&
-            event.source != null
+            event.source != null &&
+            event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
         ) {
-            if (event.eventType in TEXT_EDIT_FOCUS_EVENT_TYPES) {
-                val editTextString = event.text[0].toString()
-                if (packageName == DISCORD_PACKAGE) {
-                    // This is a workaround to filter for the right edit field.
-                    // E.g. we don't want to trigger this on the edittext for emojis
-                    // Unfortunately if the edit text field has been edited then this won't trigger
-                    // But that's not too bad. User can just erase and redo.
-                    if (editTextString.startsWith("Message")) {
-                        redrawShowSuggestionWidget(event.source!!, chatParser)
-                        return
-                    }
-                } else if (packageName == WHATSAPP_PACKAGE) {
-                    if (editTextString.startsWith("Message")) {
-                        redrawShowSuggestionWidget(event.source!!, chatParser)
-                        return
-                    }
-                }
-            } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) {
-                suggestionGeneratorWidget?.userHint = event.source?.text.toString()
-                Log.d(LOG_TAG, "User hint updated to ${suggestionGeneratorWidget?.userHint}")
+            // Typing triggers two things:
+            // (1) hint that will be used as part of the prompt
+            // (2) if it follows the TURN_ON_PREFIX, then we want to turn on the widget
+            //    I don't auto-turn on the widget on text focus because some apps like whatsapp
+            //    auto-focuses when you click on a thread, and it gets kinda annoying
+            val userString = event.source?.text.toString()
+
+            suggestionGeneratorWidget?.userHint = userString
+            Log.d(LOG_TAG, "User hint updated to ${suggestionGeneratorWidget?.userHint}")
+
+            if (suggestionGeneratorWidget?.isLive != true && userString.startsWith(TURN_ON_PREFIX)) {
+                redrawShowSuggestionWidget(event.source!!, chatParser)
+                return
             }
         }
 

@@ -54,6 +54,9 @@ class SuggestionGeneratorWidget(
     // Can't just fetch from the original edit text node because that view is out of date
     var userHint: String = ""
 
+    // drawWidget turns it to true, destroy turns it to false
+    var isLive: Boolean = false
+
     /**
      * Draws the widget on the screen, and attach a click listener.
      * This should only be called once per class instance, during construction.
@@ -113,6 +116,8 @@ class SuggestionGeneratorWidget(
                 isGenerating = false
             }
         }
+
+        isLive = true
     }
 
     // Draw the floating widget on the screen. There's a show suggestion button on there.
@@ -155,5 +160,6 @@ class SuggestionGeneratorWidget(
             widgetView = null
         }
         suggestionResultsWidget?.destroyWidget()
+        isLive = false
     }
 }
