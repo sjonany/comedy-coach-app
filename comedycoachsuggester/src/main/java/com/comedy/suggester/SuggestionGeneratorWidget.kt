@@ -129,7 +129,7 @@ class SuggestionGeneratorWidget(
         widgetView = layoutInflater.inflate(R.layout.floating_widget, null)
 
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
@@ -142,8 +142,7 @@ class SuggestionGeneratorWidget(
         // If I want to fix this: Maybe better to just see if keyboard is visible, and place it
         // relative to that
         params.y = 1500 - LAYOUT_DRAW_OFFSET
-        params.width = 700
-        params.height = 100
+        params.height = 150
 
         Log.d(LOG_TAG, "Floating widget params: $params")
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

@@ -1,6 +1,7 @@
 package com.comedy.suggester
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Bundle
@@ -13,6 +14,8 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import com.comedy.suggester.generator.SuggestionResult
 
 
@@ -52,15 +55,19 @@ class SuggestionResultsWidget(
         // Dynamically add buttons for each suggestion
         linearLayout.removeAllViews()
         suggestionResult.suggestions.forEachIndexed { index, suggestion ->
-            val button = Button(context)
-            button.text = suggestion
+            val button = createButton(suggestion)
             button.setOnClickListener {
                 replaceText(editTextNode, suggestion)
             }
             linearLayout.addView(button)
         }
-        val closeButton = Button(context)
-        closeButton.text = "Back to keyboard"
+        val closeButton = createButton("Back to keyboard")
+        closeButton.background =
+            ContextCompat.getDrawable(
+                context,
+                R.drawable.close_button_background
+            )
+        closeButton.setTextColor(context.getColorStateList(R.color.on_tertiary))
         closeButton.setOnClickListener { destroyWidget() }
         linearLayout.addView(closeButton)
 
@@ -122,4 +129,25 @@ class SuggestionResultsWidget(
         val success = editTextNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
         Log.d(LOG_TAG, "Replacing text with $text. Success: $success")
     }
+
+    private fun createButton(buttonText: String): Button {
+        return Button(context).apply {
+            text = buttonText
+            background = ContextCompat.getDrawable(context, R.drawable.rounded_button_background)
+            setTextColor(context.getColorStateList(R.color.on_secondary))
+            setPadding(8.dp)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                leftMargin = 8.dp
+                rightMargin = 8.dp
+                bottomMargin = 8.dp
+            }
+        }
+
+    }
+
+    val Int.dp: Int get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
 }
