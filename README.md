@@ -7,7 +7,7 @@ Here's a video of it in action:
 
 https://github.com/user-attachments/assets/81a52e64-939f-4ab3-80dd-5ea1cc99329b
 
-See this medium post (TODO:) for more interesting examples
+See this [medium post](https://medium.com/@sjonany/can-ai-be-funny-an-exploration-with-texting-on-android-and-chatgpt-911af17f9b00) for more interesting examples
 
 ## How to use
 - Install the APK by cloning this repo and running the project on android studio with your phone connected through USB. See [this guide](https://developer.android.com/studio/run/device).
@@ -35,4 +35,4 @@ See this medium post (TODO:) for more interesting examples
  **A:** Yeah I wouldn't have installed this app if it's written by someone else too, so use your own judgment (or if you want to trust me? Though you probably shouldn't trust strangers on the internet:)).
   Here's the [accessibility config](https://github.com/sjonany/comedy-coach-app/blob/deac8b4be8ca801385c388a85a73563698576844/comedycoachsuggester/src/main/res/xml/accessibility_service_config.xml).
   The app listens to text edits in discord + whatsapp only. It also does have internet connection permission so we can call OpenAI API. 
-- **What's next?** See the medium post (TODO:). But TL;DR - not planning on publishing it to the app store. My focus is to make this app funnier **to me**.
+- **What's next?** See the [medium post](https://medium.com/@sjonany/can-ai-be-funny-an-exploration-with-texting-on-android-and-chatgpt-911af17f9b00). But TL;DR - not planning on publishing it to the app store. My focus is to make this app funnier **to me**.
