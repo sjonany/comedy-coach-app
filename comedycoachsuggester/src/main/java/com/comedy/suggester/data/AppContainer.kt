@@ -11,6 +11,7 @@ import com.aallam.openai.client.OpenAI
  */
 interface AppContainer {
     val appSettingsRepository: AppSettingsRepository
+    val characterProfileRepository: CharacterProfileRepository
     var openAiApiService: OpenAI?
 
     fun initializeOpenAiApiService(apiKey: String)
@@ -25,6 +26,13 @@ class AppDataContainer(private val context: Context) : AppContainer {
      */
     override val appSettingsRepository: AppSettingsRepository by lazy {
         OfflineAppSettingsRepository(AppDatabase.getDatabase(context).appSettingsDao())
+    }
+
+    /**
+     * Implementation for [CharacterProfileRepository]
+     */
+    override val characterProfileRepository: CharacterProfileRepository by lazy {
+        OfflineCharacterProfileRepository(AppDatabase.getDatabase(context).characterProfileDao())
     }
 
     /**

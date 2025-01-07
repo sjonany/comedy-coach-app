@@ -4,14 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 /**
  * Database singleton.
  * Code adapted from https://developer.android.com/codelabs/basic-android-kotlin-compose-persisting-data-room#6
  */
-@Database(entities = [AppSettings::class], version = 1, exportSchema = false)
+@Database(
+    entities = [AppSettings::class, CharacterProfile::class],
+    version = 2, exportSchema = false
+)
+@TypeConverters(MapTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsDao(): AppSettingsDao
+    abstract fun characterProfileDao(): CharacterProfileDao
 
     companion object {
         private const val DATABASE_NAME = "comedy_coach_db"
