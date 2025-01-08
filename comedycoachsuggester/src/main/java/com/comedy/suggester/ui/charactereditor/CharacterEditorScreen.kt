@@ -58,8 +58,6 @@ fun CharacterEditorScreen(
         characterProfile = viewModel.characterEditorUiState.characterProfile,
         onSave = { characterProfile ->
             coroutineScope.launch {
-                // TODO: Does this retrigger recomposition? Probably not, because the view model
-                // isn't rembmered / part of the parameter? idk.
                 viewModel.saveCharacterProfile(characterProfile)
                 showText(
                     navController.context, "Updated ${characterProfile.id}"
@@ -75,7 +73,7 @@ fun CharacterEditorWidget(
     characterProfile: CharacterProfile,
     onSave: (CharacterProfile) -> Unit,
 ) {
-    var newDiscordAliases by remember {
+    var newDiscordAliases by remember(characterProfile) {
         mutableStateOf(
             getAliasesAsUiString(
                 characterProfile,
@@ -83,7 +81,7 @@ fun CharacterEditorWidget(
             )
         )
     }
-    var newWhatsappAliases by remember {
+    var newWhatsappAliases by remember(characterProfile) {
         mutableStateOf(
             getAliasesAsUiString(
                 characterProfile,
@@ -91,7 +89,7 @@ fun CharacterEditorWidget(
             )
         )
     }
-    var newDescription by remember { mutableStateOf(characterProfile.description) }
+    var newDescription by remember(characterProfile) { mutableStateOf(characterProfile.description) }
     Column(
         modifier = modifier
             .fillMaxWidth()
