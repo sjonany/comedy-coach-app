@@ -1,4 +1,4 @@
-package com.comedy.suggester.ui.characterprofile
+package com.comedy.suggester.ui.charactereditor
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 /**
- * Screen for configuring character profiles.
+ * Screen for configuring 1 character profile.
  */
 @Composable
-fun CharacterProfileScreen(navController: NavController, modifier: Modifier) {
+fun CharacterEditorScreen(navController: NavController, modifier: Modifier) {
     // TODO: Implement
     TextField(
         value = "Test",

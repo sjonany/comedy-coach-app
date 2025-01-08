@@ -29,7 +29,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.comedy.suggester.R
 import com.comedy.suggester.ui.appsetting.AppSettingScreen
-import com.comedy.suggester.ui.characterprofile.CharacterProfileScreen
+import com.comedy.suggester.ui.charactereditor.CharacterEditorScreen
+import com.comedy.suggester.ui.characterselection.CharacterSelectionScreen
 import kotlinx.coroutines.launch
 
 /**
@@ -37,7 +38,8 @@ import kotlinx.coroutines.launch
  */
 enum class AppScreen(val title: String, val route: String) {
     AppSetting(title = "App settings", route = "app_settings"),
-    CharacterProfile(title = "Character profile", route = "character_profile"),
+    CharacterSelection(title = "Character selection", route = "character_selection"),
+    CharacterEditor(title = "Character editor", route = "character_edit"),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,8 +98,8 @@ fun DrawerContent(onItemSelected: (AppScreen) -> Unit) {
             onClick = { onItemSelected(AppScreen.AppSetting) }
         )
         DrawerItem(
-            text = AppScreen.CharacterProfile.title,
-            onClick = { onItemSelected(AppScreen.CharacterProfile) }
+            text = AppScreen.CharacterSelection.title,
+            onClick = { onItemSelected(AppScreen.CharacterSelection) }
         )
     }
 }
@@ -125,8 +127,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable(AppScreen.AppSetting.route) {
             AppSettingScreen(navController, modifier)
         }
-        composable(AppScreen.CharacterProfile.route) {
-            CharacterProfileScreen(navController, modifier)
+        composable(AppScreen.CharacterSelection.route) {
+            CharacterSelectionScreen(navController, modifier)
+        }
+        composable(AppScreen.CharacterEditor.route) {
+            CharacterEditorScreen(navController, modifier)
         }
     }
 }
