@@ -126,7 +126,7 @@ fun DrawerItem(text: String, onClick: () -> Unit) {
 
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = AppScreen.AppSetting.route) {
+    NavHost(navController = navController, startDestination = AppScreen.CharacterSelection.route) {
         composable(AppScreen.AppSetting.route) {
             AppSettingScreen(navController, modifier)
         }

@@ -52,9 +52,6 @@ class CharacterSelectionViewModel(private val characterProfileRepository: Charac
     }
 }
 
-/**
- * Represents Ui State for an AppSettings.
- */
 data class CharacterSelectionUiState(
     val characterProfiles: List<CharacterProfile> = emptyList()
 )
