@@ -1,5 +1,6 @@
 package com.comedy.suggester.ui
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.comedy.suggester.R
 import com.comedy.suggester.ui.appsetting.AppSettingScreen
 import com.comedy.suggester.ui.charactereditor.CharacterEditorScreen
@@ -130,8 +133,21 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable(AppScreen.CharacterSelection.route) {
             CharacterSelectionScreen(navController, modifier)
         }
-        composable(AppScreen.CharacterEditor.route) {
-            CharacterEditorScreen(navController, modifier)
+        composable(
+            route = "${AppScreen.CharacterEditor.route}/{characterId}",
+            arguments = listOf(navArgument("characterId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val characterName =
+                backStackEntry.arguments?.getString("characterId")?.let { Uri.decode(it) }
+            CharacterEditorScreen(modifier, navController, characterName!!)
         }
     }
+}
+
+// Navigation functions
+
+// characterId = [CharacterProfile.id]
+fun navigateToCharacterEditor(navController: NavHostController, characterId: String) {
+    val encodedCharacterName = Uri.encode(characterId)
+    navController.navigate("${AppScreen.CharacterEditor.route}/$encodedCharacterName")
 }

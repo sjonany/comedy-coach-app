@@ -35,9 +35,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.comedy.suggester.data.CharacterProfile
 import com.comedy.suggester.ui.AppViewModelProvider
+import com.comedy.suggester.ui.navigateToCharacterEditor
 import kotlinx.coroutines.launch
 
 
@@ -46,19 +47,21 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun CharacterSelectionScreen(
-    navController: NavController, modifier: Modifier,
+    navController: NavHostController, modifier: Modifier,
     viewModel: CharacterSelectionViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val characterList = viewModel.characterSelectionUiState.characterProfiles.map { it.id }
     val coroutineScope = rememberCoroutineScope()
-    // TODO: Add hooks to onEdit
     CharacterSelectionWidget(
         characterList = characterList,
         onEdit = { selectedCharacter ->
-            showText(
-                navController.context,
-                "Editing: $selectedCharacter"
-            )
+            if (selectedCharacter == NO_CHARACTER_SELECTED) {
+                showText(
+                    navController.context, "No character selected"
+                )
+                return@CharacterSelectionWidget
+            }
+            navigateToCharacterEditor(navController, selectedCharacter)
         },
         onCreate = { newCharacter ->
             coroutineScope.launch {
