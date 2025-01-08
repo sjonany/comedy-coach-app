@@ -7,11 +7,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import com.comedy.suggester.ui.appsetting.OpenAiApiKeyTextInput
+import com.comedy.suggester.ui.MainScreen
 import com.comedy.suggester.ui.theme.ComedyCoachControllerTheme
 
 class ComedyCoachSettingsActivity : ComponentActivity() {
@@ -24,17 +20,13 @@ class ComedyCoachSettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         Log.d(LOG_TAG, "onCreate")
-        checkHasDrawOverlayPermission();
+        checkHasDrawOverlayPermission()
 
         // Draw the content
         enableEdgeToEdge()
         setContent {
             ComedyCoachControllerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    OpenAiApiKeyTextInput(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainScreen()
             }
         }
     }

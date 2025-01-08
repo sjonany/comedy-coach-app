@@ -56,6 +56,7 @@ dependencies {
 
     testImplementation("com.google.truth:truth:1.4.4")
 
+    implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
