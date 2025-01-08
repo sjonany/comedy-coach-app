@@ -26,11 +26,11 @@ class CharacterSelectionViewModel(private val characterProfileRepository: Charac
 
     // Initialize the value w/ what we have from the db
     init {
-        loadCharacterProfiles()
+        reloadCharacterProfiles()
     }
 
     // Load from the repo
-    private fun loadCharacterProfiles() {
+    fun reloadCharacterProfiles() {
         viewModelScope.launch {
             characterProfileRepository.getAllCharacterProfiles().collect { characterProfiles ->
                 // Update the UI state when the flow emits a new value

@@ -28,21 +28,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.comedy.suggester.data.CharacterProfile
+import com.comedy.suggester.ui.AppViewModelProvider
+import kotlinx.coroutines.launch
 
 
 /**
  * Screen for selecting which character profile to edit or create.
  */
 @Composable
-fun CharacterSelectionScreen(navController: NavController, modifier: Modifier) {
-    // TODO: Pass in the actual characterList, add hooks to onEdit, onCreate w/ repo
-    val characterList = listOf("John", "Jane", "Alex")
+fun CharacterSelectionScreen(
+    navController: NavController, modifier: Modifier,
+    viewModel: CharacterSelectionViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val characterList = viewModel.characterSelectionUiState.characterProfiles.map { it.id }
+    val coroutineScope = rememberCoroutineScope()
+    // TODO: Add hooks to onEdit
     CharacterSelectionWidget(
         characterList = characterList,
         onEdit = { selectedCharacter ->
@@ -52,9 +61,13 @@ fun CharacterSelectionScreen(navController: NavController, modifier: Modifier) {
             )
         },
         onCreate = { newCharacter ->
-            showText(
-                navController.context, "Created: $newCharacter"
-            )
+            coroutineScope.launch {
+                viewModel.createNewUser(newCharacter)
+                showText(
+                    navController.context, "Created: $newCharacter"
+                )
+                viewModel.reloadCharacterProfiles()
+            }
         },
         modifier = modifier
     )
@@ -74,7 +87,7 @@ fun CharacterSelectionWidget(
     onEdit: (String) -> Unit,
     onCreate: (String) -> Unit
 ) {
-    var selectedCharacter = rememberTextFieldState(NO_CHARACTER_SELECTED)
+    val selectedCharacter = rememberTextFieldState(NO_CHARACTER_SELECTED)
     var isNameSelectorExpanded by remember { mutableStateOf(false) }
     var newCharacterName by remember { mutableStateOf("") }
 
@@ -102,15 +115,6 @@ fun CharacterSelectionWidget(
                         trailingIcon = { TrailingIcon(expanded = isNameSelectorExpanded) },
                         colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     )
-                    /*
-                    TextField(
-                        value = selectedCharacter,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Select character to edit") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isNameSelectorExpanded) },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                    )*/
                     ExposedDropdownMenu(
                         expanded = isNameSelectorExpanded,
                         onDismissRequest = { isNameSelectorExpanded = false }
@@ -140,7 +144,7 @@ fun CharacterSelectionWidget(
             TextField(
                 value = newCharacterName,
                 onValueChange = { newCharacterName = it },
-                placeholder = { Text("New character name") },
+                placeholder = { Text("New character (${CharacterProfile.MY_ID} for self)") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier.weight(1f)
