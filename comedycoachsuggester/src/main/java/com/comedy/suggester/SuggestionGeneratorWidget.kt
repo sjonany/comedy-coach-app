@@ -9,11 +9,14 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
+import com.comedy.suggester.chatparser.ChatMessage
 import com.comedy.suggester.chatparser.ChatMessages
-import com.comedy.suggester.chatparser.ChatParser
+import com.comedy.suggester.chatparser.ChatParserFactory
+import com.comedy.suggester.data.CharacterProfile
 import com.comedy.suggester.generator.OpenAiSuggestionGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 
@@ -21,13 +24,15 @@ import kotlinx.coroutines.launch
  * Draws the floating widget in chat text fields that will trigger response generation.
  * The instance is 1-1 tied to a chat context. If the chat context changes, the caller should
  * destroy this instance and create a new one.
+ * @param packageName - the package name of the app that triggered the generation
  */
 class SuggestionGeneratorWidget(
     private val context: Context,
     private val rootInActiveWindow: AccessibilityNodeInfo,
     private val textEditNode: AccessibilityNodeInfo,
-    private val chatParser: ChatParser,
+    private val packageName: String
 ) {
+    private val chatParser = ChatParserFactory.getChatParser(packageName)
 
     companion object {
         // For some reason whenever we windowManager.addView, the y offset that I have is further
@@ -44,6 +49,8 @@ class SuggestionGeneratorWidget(
     private var widgetView: View? = null
     private val suggestionGenerator =
         OpenAiSuggestionGenerator((context.applicationContext as SuggesterApplication).container.openAiApiService!!)
+    private val characterProfileRepository =
+        (context.applicationContext as SuggesterApplication).container.characterProfileRepository
 
     // Whether or not we're waiting for suggestion generation to happen. Only at most one can be
     // active at any time
@@ -93,10 +100,39 @@ class SuggestionGeneratorWidget(
                 chatParser.parseChatFromRootNode(rootInActiveWindow)
             Log.d(LOG_TAG, "Parsed chat messages: $chatMessages")
 
+            val uniqueSenderAliases = chatMessages.getMessages().map { it.sender }.toSet()
+
             // Generate responses using LLM
             CoroutineScope(Dispatchers.Main).launch {
+                // Fetch the relevant character profiles
+                val aliasToProfile: Map<String, CharacterProfile?> =
+                    uniqueSenderAliases.associateWith { senderAlias ->
+                        characterProfileRepository.findCharacterProfileByAlias(
+                            packageName,
+                            senderAlias
+                        ).firstOrNull()
+                    }
+                Log.d(LOG_TAG, "Fetched character profiles: $aliasToProfile")
+
+                // Normalize the names in the chat messages
+                val senderNormalizedChatMessages: MutableList<ChatMessage> =
+                    chatMessages.getMessages().toMutableList()
+                senderNormalizedChatMessages.replaceAll { message ->
+                    val normalizedName = aliasToProfile[message.sender]?.id ?: message.sender
+                    message.copy(sender = normalizedName)
+                }
+                val characterProfilesById: Map<String, CharacterProfile> =
+                    aliasToProfile.values.filterNotNull().associateBy { it.id }
+
+                Log.d(LOG_TAG, "characterProfilesById: $characterProfilesById")
+                Log.d(LOG_TAG, "Normalized chat senders: $senderNormalizedChatMessages")
                 val suggestions =
-                    suggestionGenerator.generateSuggestions(chatMessages, userHint)
+                    suggestionGenerator.generateSuggestions(
+                        ChatMessages(
+                            senderNormalizedChatMessages
+                        ), userHint,
+                        characterProfilesById
+                    )
                 if (suggestions != null) {
                     Log.d(
                         LOG_TAG,

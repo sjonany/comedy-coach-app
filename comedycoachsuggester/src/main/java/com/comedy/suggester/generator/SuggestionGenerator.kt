@@ -1,16 +1,21 @@
 package com.comedy.suggester.generator
 
 import com.comedy.suggester.chatparser.ChatMessages
+import com.comedy.suggester.data.CharacterProfile
 
 // Generates suggestions given chat context
 interface SuggestionGenerator {
-    suspend fun generateSuggestions(chatMessages: ChatMessages, userHint: String): SuggestionResult?
+    suspend fun generateSuggestions(
+        chatMessages: ChatMessages,
+        userHint: String,
+        characterProfilesById: Map<String, CharacterProfile>
+    ): SuggestionResult?
 }
 
 // Suggestion result. Contains the suggestions and metadata on how they were generated
 data class SuggestionResult(
     val suggestions: List<String>,
-    val generationMetadata: GenerationMetadata
+    val generationMetadata: GenerationMetadata,
 )
 
 // Metadata on how the suggestions were generated

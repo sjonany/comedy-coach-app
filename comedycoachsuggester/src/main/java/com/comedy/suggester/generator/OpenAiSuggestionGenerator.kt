@@ -9,6 +9,7 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.comedy.suggester.Config
 import com.comedy.suggester.chatparser.ChatMessages
+import com.comedy.suggester.data.CharacterProfile
 
 /**
  * Generates suggestions using OpenAI
@@ -16,15 +17,15 @@ import com.comedy.suggester.chatparser.ChatMessages
 class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
     companion object {
         private const val LOG_TAG = "OpenAiSuggestionGenerator"
-
     }
 
     override suspend fun generateSuggestions(
         chatMessages: ChatMessages,
-        userHint: String
+        userHint: String,
+        characterProfilesById: Map<String, CharacterProfile>
     ): SuggestionResult? {
         // Construct prompt
-        val prompt = chatMessagesToPrompt(chatMessages, userHint)
+        val prompt = chatMessagesToPrompt(chatMessages, userHint, characterProfilesById)
         val llmRequest = createLlmRequest(prompt)
 
         // Ask LLM
@@ -87,19 +88,47 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         return chatCompletionRequest
     }
 
-    internal fun chatMessagesToPrompt(chatMessages: ChatMessages, userHint: String): String {
+    internal fun chatMessagesToPrompt(
+        chatMessages: ChatMessages,
+        userHint: String,
+        characterProfilesById: Map<String, CharacterProfile>
+    ): String {
         val chatMessagePromptPart =
             chatMessages.getMessages().joinToString(separator = "\n") { message ->
                 "${message.sender}: ${message.message}"
             }
 
-        return "Please suggest 5 funny responses to this chat history, " +
-                "with hyphen as bullet points and separated by newline " +
-                "(E.g. - Content1\n - Content2). " +
+        val partnerDescriptions = characterProfilesById.values.filter {
+            it.id != CharacterProfile.MY_ID
+        }.joinToString("\n") { "[${it.id} profile]\n${it.description}\n" }
+
+        return """
+            You will be given character descriptions between a friend and me, a chat history, and be
+            asked to provide funny responses.
+            
+            Here are the character descriptions:\n\n
+        """ +
+                (if (characterProfilesById.contains(CharacterProfile.MY_ID))
+                    "[My profile]\n" + characterProfilesById[CharacterProfile.MY_ID]!!.description
+                            + "\n\n"
+                else "") +
+                partnerDescriptions +
+                "\n[Chat history]\n" +
+                chatMessagePromptPart +
+                """
+            [Task]
+            Let’s think step by step. Answer each of these questions in order
+            Which concepts in the most recent message written by my friend am I likely to make a joke of given both our character profiles?
+            What joke angles and tones might I want to use for these concepts?
+            """ +
                 (if (userHint.trim()
                         .isEmpty()
-                ) "" else "Also, $userHint.\n") +
-                "Do NOT include the person name in your response.\n" +
-                "Chat history:\n$chatMessagePromptPart"
+                ) "" else "Also, incorporate the following: $userHint.\n") +
+                """
+            Finally, given the joke angles and tones, please suggest 5 funny responses that I 
+            am likely to write to my friend in the chat, with hyphen as bullet points and separated
+            by newline (E.g. - Content1\n - Content2).
+            Do NOT include the person name in your response.
+        """
     }
 }

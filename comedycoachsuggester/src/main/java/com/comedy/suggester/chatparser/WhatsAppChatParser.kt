@@ -2,6 +2,7 @@ package com.comedy.suggester.chatparser
 
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
+import com.comedy.suggester.data.CharacterProfile
 
 /**
  * Parses chat from a whatsapp chat window
@@ -58,7 +59,7 @@ class WhatsAppChatParser : ChatParser {
         // If sent by me, there's an image view at the end that says read/delivered
         val sender =
             if (chatBubble.getChild(chatBubble.childCount - 1).className == "android.widget.ImageView")
-                "me" else partnerName
+                CharacterProfile.MY_ID else partnerName
 
         val textViews = mutableListOf<AccessibilityNodeInfo>()
         for (i in 0 until chatBubble.childCount) {

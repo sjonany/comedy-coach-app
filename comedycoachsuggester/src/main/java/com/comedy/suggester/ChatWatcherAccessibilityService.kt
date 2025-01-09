@@ -6,8 +6,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.comedy.suggester.chatparser.ChatParser
-import com.comedy.suggester.chatparser.ChatParserFactory
 import com.comedy.suggester.data.AppContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +91,6 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             return
         }
 
-        val chatParser = ChatParserFactory.getChatParser(packageName)
         if (event.className == "android.widget.EditText" &&
             event.source != null &&
             event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
@@ -109,7 +106,7 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             Log.d(LOG_TAG, "User hint updated to ${suggestionGeneratorWidget?.userHint}")
 
             if (suggestionGeneratorWidget?.isLive != true && userString.startsWith(TURN_ON_PREFIX)) {
-                redrawShowSuggestionWidget(event.source!!, chatParser)
+                redrawShowSuggestionWidget(event.source!!, packageName)
                 return
             }
         }
@@ -135,12 +132,12 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
      */
     private fun redrawShowSuggestionWidget(
         textEditNode: AccessibilityNodeInfo,
-        chatParser: ChatParser
+        packageName: String
     ) {
         Log.d(LOG_TAG, "redrawShowSuggestionWidget")
         suggestionGeneratorWidget?.destroyWidget()
         suggestionGeneratorWidget =
-            SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode, chatParser)
+            SuggestionGeneratorWidget(this, rootInActiveWindow, textEditNode, packageName)
         suggestionGeneratorWidget!!.drawWidget()
     }
 
