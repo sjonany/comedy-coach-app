@@ -17,7 +17,14 @@ class WhatsAppChatParser : ChatParser {
 
     override fun parseChatFromRootNode(rootInActiveWindow: AccessibilityNodeInfo): ChatMessages {
         Log.d(LOG_TAG, "parseChatFromRootNode")
-        logNodeTree(rootInActiveWindow)
+        // logNodeTree(rootInActiveWindow)
+
+        // Only works for 1-1.
+        val partnerName = findFirstNodeWithClassName(
+            rootInActiveWindow,
+            "android.widget.TextView"
+        )?.text ?: "friend"
+
         val chatParent = findFirstNodeWithClassName(
             rootInActiveWindow,
             "android.widget.ListView"
@@ -34,7 +41,7 @@ class WhatsAppChatParser : ChatParser {
             if (chatBubble.className != "android.view.ViewGroup") {
                 continue
             }
-            val parsedChatBubble = parseChatBubble(chatBubble)
+            val parsedChatBubble = parseChatBubble(chatBubble, partnerName.toString())
             if (parsedChatBubble != null) {
                 result.addMessage(
                     ChatMessage(parsedChatBubble.sender, parsedChatBubble.message, null)
@@ -46,12 +53,12 @@ class WhatsAppChatParser : ChatParser {
 
     // A chat bubble is one message. It contains info like delivery time, whether it's read / not
     // and the message
-    fun parseChatBubble(chatBubble: AccessibilityNodeInfo): ChatMessage? {
+    fun parseChatBubble(chatBubble: AccessibilityNodeInfo, partnerName: String): ChatMessage? {
         // We only handle 1-1 for now.
         // If sent by me, there's an image view at the end that says read/delivered
         val sender =
             if (chatBubble.getChild(chatBubble.childCount - 1).className == "android.widget.ImageView")
-                "me" else "friend"
+                "me" else partnerName
 
         val textViews = mutableListOf<AccessibilityNodeInfo>()
         for (i in 0 until chatBubble.childCount) {

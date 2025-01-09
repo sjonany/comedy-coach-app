@@ -88,7 +88,6 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
     }
 
     internal fun chatMessagesToPrompt(chatMessages: ChatMessages, userHint: String): String {
-        chatMessages.obfuscateSenders()
         val chatMessagePromptPart =
             chatMessages.getMessages().joinToString(separator = "\n") { message ->
                 "${message.sender}: ${message.message}"
