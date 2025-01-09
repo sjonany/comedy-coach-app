@@ -47,18 +47,27 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
     val SUGGESTION_PREFIX = "-"
 
     /**
-     * We assume the llm response looks like this:
+     * We assume the llm response to be a repetition of the following segments:
      * Some kind of text \n
      * - suggestion 1 \n
      * - suggestion 2 \n
      * ending text
+     *
+     * And, we just want the final segment.
+     * So, we look for the last hyphenated list item, and just keep going up until we hit a non-list
+     * item
      */
     internal fun parseLlmResponse(llmResponse: String): List<String> {
         val tokens = llmResponse.split("\n")
         val result: MutableList<String> = mutableListOf()
-        for (tok in tokens) {
+        // Go in reverse order
+        for (tok in tokens.reversed()) {
             var curTok = tok.trim()
             if (!curTok.startsWith(SUGGESTION_PREFIX)) {
+                if (result.isNotEmpty()) {
+                    // The end of a hyphenated segment.
+                    break
+                }
                 continue
             }
             curTok = curTok.removePrefix(SUGGESTION_PREFIX).trim()
@@ -69,7 +78,7 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
             // Sometimes the LLM just gives a one-element suggestion.
             result.add(llmResponse.trim())
         }
-        return result
+        return result.reversed()
     }
 
     private fun createLlmRequest(prompt: String): ChatCompletionRequest {
@@ -102,33 +111,41 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
             it.id != CharacterProfile.MY_ID
         }.joinToString("\n") { "[${it.id} profile]\n${it.description}\n" }
 
-        return """
-            You will be given character descriptions between a friend and me, a chat history, and be
+        return trimLines(
+            """You will be given character descriptions between a friend and me, a chat history, and be
             asked to provide funny responses.
             
-            Here are the character descriptions:\n\n
+            Here are the character descriptions:
         """ +
-                (if (characterProfilesById.contains(CharacterProfile.MY_ID))
-                    "[My profile]\n" + characterProfilesById[CharacterProfile.MY_ID]!!.description
-                            + "\n\n"
-                else "") +
-                partnerDescriptions +
-                "\n[Chat history]\n" +
-                chatMessagePromptPart +
-                """
+                    (if (characterProfilesById.contains(CharacterProfile.MY_ID))
+                        "[My profile]\n" + characterProfilesById[CharacterProfile.MY_ID]!!.description
+                                + "\n\n"
+                    else "") +
+                    partnerDescriptions +
+                    "\n[Chat history]\n" +
+                    chatMessagePromptPart +
+                    """
+                        
             [Task]
             Let’s think step by step. Answer each of these questions in order
             Which concepts in the most recent message written by my friend am I likely to make a joke of given both our character profiles?
             What joke angles and tones might I want to use for these concepts?
             """ +
-                (if (userHint.trim()
-                        .isEmpty()
-                ) "" else "Also, incorporate the following: $userHint.\n") +
-                """
+                    (if (userHint.trim()
+                            .isEmpty()
+                    ) "" else "Also, incorporate the following: $userHint.\n") +
+                    """
             Finally, given the joke angles and tones, please suggest 5 funny responses that I 
             am likely to write to my friend in the chat, with hyphen as bullet points and separated
             by newline (E.g. - Content1\n - Content2).
             Do NOT include the person name in your response.
         """
+        )
     }
 }
+
+// Trim lines for each line in the string.
+internal fun trimLines(input: String): String {
+    return input.lines().joinToString("\n") { it.trim() }
+}
+
