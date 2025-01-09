@@ -41,7 +41,12 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         if (suggestions.isEmpty()) {
             return null
         }
-        return SuggestionResult(suggestions, GenerationMetadata(Config.LLM_MODEL, prompt))
+        return SuggestionResult(
+            suggestions, GenerationMetadata(
+                Config.LLM_MODEL, prompt,
+                llmResponse
+            )
+        )
     }
 
     val SUGGESTION_PREFIX = "-"

@@ -23,5 +23,7 @@ data class GenerationMetadata(
     // The llm model used for this generation
     val modelName: String,
     // The prompt used for the generation
-    val prompt: String
+    val prompt: String,
+    // The raw llm response that gets parsed into suggestions
+    val llmResponse: String
 )

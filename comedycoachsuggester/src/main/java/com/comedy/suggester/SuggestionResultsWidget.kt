@@ -74,8 +74,9 @@ class SuggestionResultsWidget(
         if (Config.IS_DEBUG) {
             val promptDebugText = TextView(context)
             promptDebugText.setText(
-                "Model: ${suggestionResult.generationMetadata.modelName}\n" +
-                        suggestionResult.generationMetadata.prompt
+                "Model: ${suggestionResult.generationMetadata.modelName}\n\n" +
+                        "Prompt: ${suggestionResult.generationMetadata.prompt}\n\n" +
+                        "Raw LLM response: ${suggestionResult.generationMetadata.llmResponse}\n\n"
             )
             linearLayout.addView(promptDebugText)
         }
