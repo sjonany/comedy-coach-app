@@ -121,8 +121,18 @@ class SuggestionGeneratorWidget(
                     val normalizedName = aliasToProfile[message.sender]?.id ?: message.sender
                     message.copy(sender = normalizedName)
                 }
-                val characterProfilesById: Map<String, CharacterProfile> =
-                    aliasToProfile.values.filterNotNull().associateBy { it.id }
+                val characterProfilesById: MutableMap<String, CharacterProfile> =
+                    aliasToProfile.values.filterNotNull().associateBy { it.id }.toMutableMap()
+
+                // Always include my profile as background, even if I'm not visible in chat context
+                if (!characterProfilesById.containsKey(CharacterProfile.MY_ID)) {
+                    val myProfile =
+                        characterProfileRepository.findCharacterProfileById(CharacterProfile.MY_ID)
+                            .firstOrNull()
+                    if (myProfile != null) {
+                        characterProfilesById[CharacterProfile.MY_ID] = myProfile
+                    }
+                }
 
                 Log.d(LOG_TAG, "characterProfilesById: $characterProfilesById")
                 Log.d(LOG_TAG, "Normalized chat senders: $senderNormalizedChatMessages")
@@ -130,7 +140,7 @@ class SuggestionGeneratorWidget(
                     suggestionGenerator.generateSuggestions(
                         ChatMessages(
                             senderNormalizedChatMessages
-                        ), userHint,
+                        ), getSanitizedUserHint(),
                         characterProfilesById
                     )
                 if (suggestions != null) {
@@ -196,5 +206,21 @@ class SuggestionGeneratorWidget(
         }
         suggestionResultsWidget?.destroyWidget()
         isLive = false
+    }
+
+
+    /**
+     * The user hint text unfortunately is populated by the default text like "Message @abc", which
+     * are not actually typed by the user. Filter these out.
+     */
+    private fun getSanitizedUserHint(): String {
+        if (
+            (packageName == ChatWatcherAccessibilityService.DISCORD_PACKAGE && userHint.startsWith("Message @"))
+            ||
+            (packageName == ChatWatcherAccessibilityService.WHATSAPP_PACKAGE && userHint == "Message")
+        ) {
+            return ""
+        }
+        return userHint
     }
 }

@@ -33,6 +33,7 @@ class SuggestionResultsWidget(
 ) {
     companion object {
         private const val LOG_TAG = "SuggestionResultWidgetManager"
+        private const val DIVIDER = "\n\n------------------------------------\n\n"
     }
 
     private var windowManager: WindowManager? = null
@@ -75,7 +76,9 @@ class SuggestionResultsWidget(
             val promptDebugText = TextView(context)
             promptDebugText.setText(
                 "Model: ${suggestionResult.generationMetadata.modelName}\n\n" +
+                        DIVIDER +
                         "Prompt: ${suggestionResult.generationMetadata.prompt}\n\n" +
+                        DIVIDER +
                         "Raw LLM response: ${suggestionResult.generationMetadata.llmResponse}\n\n"
             )
             linearLayout.addView(promptDebugText)
