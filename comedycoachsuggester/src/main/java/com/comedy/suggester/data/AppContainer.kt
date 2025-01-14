@@ -4,6 +4,8 @@ import android.content.Context
 import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
+import com.anthropic.client.AnthropicClient
+import com.anthropic.client.okhttp.AnthropicOkHttpClient
 
 /**
  * App container for Dependency injection.
@@ -12,9 +14,11 @@ import com.aallam.openai.client.OpenAI
 interface AppContainer {
     val appSettingsRepository: AppSettingsRepository
     val characterProfileRepository: CharacterProfileRepository
-    var openAiApiService: OpenAI?
+    var openAiClient: OpenAI?
+    var anthropicClient: AnthropicClient?
 
     fun initializeOpenAiApiService(apiKey: String)
+    fun initializeAnthropicClient(apiKey: String)
 }
 
 /**
@@ -38,13 +42,25 @@ class AppDataContainer(private val context: Context) : AppContainer {
     /**
      * Before accessing this field, call initializeOpenAiApiService
      */
-    override var openAiApiService: OpenAI? = null
+    override var openAiClient: OpenAI? = null
         get() = field ?: throw IllegalStateException("OpenAI API Service is not initialized yet.")
 
     override fun initializeOpenAiApiService(apiKey: String) {
-        openAiApiService = OpenAI(
+        openAiClient = OpenAI(
             token = apiKey,
             logging = LoggingConfig(LogLevel.All)
         )
+    }
+
+    /**
+     * Before accessing this field, call initializeOpenAiApiService
+     */
+    override var anthropicClient: AnthropicClient? = null
+        get() = field
+            ?: throw IllegalStateException("Anthropic API Service is not initialized yet.")
+
+    override fun initializeAnthropicClient(apiKey: String) {
+        anthropicClient =
+            AnthropicOkHttpClient.builder().apiKey(apiKey).build()
     }
 }

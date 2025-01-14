@@ -45,10 +45,12 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             (applicationContext as SuggesterApplication).container
 
         // Fully initialize app dependencies. Until this is done, event processing can't start
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             appContainer.appSettingsRepository.getMainSettings().collect { mainSettings ->
                 val openAiApiKey = mainSettings!!.openAiApiKey
                 appContainer.initializeOpenAiApiService(openAiApiKey)
+                val anthropicApiKey = mainSettings.anthropicApiKey
+                appContainer.initializeAnthropicClient(anthropicApiKey)
                 isServiceReady = true
                 Log.d(
                     LOG_TAG,

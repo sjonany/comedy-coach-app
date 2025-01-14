@@ -38,6 +38,14 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/DEPENDENCIES"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -62,6 +70,9 @@ dependencies {
     // https://developer.android.com/jetpack/androidx/releases/compose-material3#compose_material3_version_14_2
     implementation("androidx.compose.material3:material3:1.4.0-alpha05")
     implementation("androidx.compose.material:material-icons-core")
+
+    implementation("com.anthropic:anthropic-java:0.1.0-alpha.7")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

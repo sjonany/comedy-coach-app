@@ -20,7 +20,13 @@ data class AppSettings(
     API key used to interact w/ Open AI API.
     Go here: https://platform.openai.com/settings/organization/api-keys
     */
-    val openAiApiKey: String
+    val openAiApiKey: String,
+
+    /*
+    API key used to interact w/ Anthropic API
+    Go here: https://console.anthropic.com/settings/keys
+    */
+    val anthropicApiKey: String
 ) {
     companion object {
         // ID of the main settings. For now there should just be one settings row and it has this ID.

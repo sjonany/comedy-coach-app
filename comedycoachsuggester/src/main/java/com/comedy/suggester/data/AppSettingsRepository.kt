@@ -14,5 +14,5 @@ interface AppSettingsRepository {
     /**
      * Update Open Ai Api Key in main settings
      */
-    suspend fun updateOpenAiApiKey(openAiApiKey: String)
+    suspend fun updateApiKeys(openAiApiKey: String, anthropicApiKey: String)
 }

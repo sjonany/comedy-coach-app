@@ -10,6 +10,11 @@ class OfflineAppSettingsRepository(private val appSettingsDao: AppSettingsDao) :
     AppSettingsRepository {
     override fun getMainSettings(): Flow<AppSettings> = appSettingsDao.getSetting(MAIN_ID)
 
-    override suspend fun updateOpenAiApiKey(openAiApiKey: String) =
-        appSettingsDao.upsert(AppSettings(openAiApiKey = openAiApiKey))
+    override suspend fun updateApiKeys(openAiApiKey: String, anthropicApiKey: String) =
+        appSettingsDao.upsert(
+            AppSettings(
+                openAiApiKey = openAiApiKey,
+                anthropicApiKey = anthropicApiKey
+            )
+        )
 }

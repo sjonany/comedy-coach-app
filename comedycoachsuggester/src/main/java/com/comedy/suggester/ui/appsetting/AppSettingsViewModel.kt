@@ -49,8 +49,10 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
 
     /** Save the current ui state to db. */
     suspend fun saveAppSettings() {
-        appSettingsRepository.updateOpenAiApiKey(
-            appSettingsUiState.appSettingsDetails.toDb().openAiApiKey
+        val dbRep = appSettingsUiState.appSettingsDetails.toDb()
+        appSettingsRepository.updateApiKeys(
+            dbRep.openAiApiKey,
+            dbRep.anthropicApiKey
         )
     }
 }
@@ -67,7 +69,8 @@ data class AppSettingsUiState(
  * We suffix the db class name with "details"
  */
 data class AppSettingsDetails(
-    val openAiApiKey: String = ""
+    val openAiApiKey: String = "",
+    val anthropicApiKey: String = ""
 )
 
 
@@ -75,7 +78,8 @@ data class AppSettingsDetails(
  * Extension function to convert ui to db representation.
  */
 fun AppSettingsDetails.toDb(): AppSettings = AppSettings(
-    openAiApiKey = openAiApiKey
+    openAiApiKey = openAiApiKey,
+    anthropicApiKey = anthropicApiKey
 )
 
 
@@ -90,5 +94,6 @@ fun AppSettings.toUiState(): AppSettingsUiState = AppSettingsUiState(
  * Extension function to convert db to ui details
  */
 fun AppSettings.toUiDetails(): AppSettingsDetails = AppSettingsDetails(
-    openAiApiKey = openAiApiKey
+    openAiApiKey = openAiApiKey,
+    anthropicApiKey = anthropicApiKey
 )

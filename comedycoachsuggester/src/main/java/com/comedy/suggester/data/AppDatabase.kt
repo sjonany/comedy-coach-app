@@ -12,7 +12,7 @@ import androidx.room.TypeConverters
  */
 @Database(
     entities = [AppSettings::class, CharacterProfile::class],
-    version = 3, exportSchema = false
+    version = 4, exportSchema = false
 )
 @TypeConverters(MapTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {

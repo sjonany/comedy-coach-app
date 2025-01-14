@@ -13,11 +13,12 @@ import com.comedy.suggester.chatparser.ChatMessage
 import com.comedy.suggester.chatparser.ChatMessages
 import com.comedy.suggester.chatparser.ChatParserFactory
 import com.comedy.suggester.data.CharacterProfile
-import com.comedy.suggester.generator.OpenAiSuggestionGenerator
+import com.comedy.suggester.generator.AnthropicSuggestionGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -48,7 +49,10 @@ class SuggestionGeneratorWidget(
     // the widget that when clicked, will trigger suggestion generation.
     private var widgetView: View? = null
     private val suggestionGenerator =
-        OpenAiSuggestionGenerator((context.applicationContext as SuggesterApplication).container.openAiApiService!!)
+        AnthropicSuggestionGenerator((context.applicationContext as SuggesterApplication).container.anthropicClient!!)
+
+    // TODO: Add model switcher.
+    // OpenAiSuggestionGenerator((context.applicationContext as SuggesterApplication).container.openAiClient!!)
     private val characterProfileRepository =
         (context.applicationContext as SuggesterApplication).container.characterProfileRepository
 
@@ -103,7 +107,7 @@ class SuggestionGeneratorWidget(
             val uniqueSenderAliases = chatMessages.getMessages().map { it.sender }.toSet()
 
             // Generate responses using LLM
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 // Fetch the relevant character profiles
                 val aliasToProfile: Map<String, CharacterProfile?> =
                     uniqueSenderAliases.associateWith { senderAlias ->
@@ -143,23 +147,28 @@ class SuggestionGeneratorWidget(
                         ), getSanitizedUserHint(),
                         characterProfilesById
                     )
-                if (suggestions != null) {
-                    Log.d(
-                        LOG_TAG,
-                        "Generated suggestions: $suggestions"
-                    )
-                    // Only when the heavy lifting is done with do we proceed w/ calling the result manager
-                    suggestionResultsWidget =
-                        SuggestionResultsWidget(
-                            context,
-                            rootInActiveWindow,
-                            textEditNode,
-                            suggestions
+                
+                // When we're updating ui stuff, we have to go back to Main.
+                withContext(Dispatchers.Main) {
+                    if (suggestions != null) {
+                        Log.d(
+                            LOG_TAG,
+                            "Generated suggestions: $suggestions"
                         )
-                    suggestionResultsWidget!!.showWidget()
+                        // Only when the heavy lifting is done with do we proceed w/ calling the result manager
+
+                        suggestionResultsWidget =
+                            SuggestionResultsWidget(
+                                context,
+                                rootInActiveWindow,
+                                textEditNode,
+                                suggestions
+                            )
+                        suggestionResultsWidget!!.showWidget()
+                    }
+                    generateSuggestionsButton.setText(R.string.generate_suggestions)
+                    isGenerating = false
                 }
-                generateSuggestionsButton.setText(R.string.generate_suggestions)
-                isGenerating = false
             }
         }
 
