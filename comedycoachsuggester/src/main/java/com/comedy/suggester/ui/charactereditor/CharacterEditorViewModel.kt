@@ -25,7 +25,7 @@ class CharacterEditorViewModel(
         CharacterEditorUiState(
             CharacterProfile(
                 id = characterId,
-                description = "",
+                senseOfHumor = "",
                 aliases = mapOf()
             )
         )

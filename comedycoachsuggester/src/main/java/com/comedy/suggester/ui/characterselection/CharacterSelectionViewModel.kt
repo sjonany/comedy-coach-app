@@ -45,7 +45,7 @@ class CharacterSelectionViewModel(private val characterProfileRepository: Charac
         characterProfileRepository.createNewProfile(
             CharacterProfile(
                 id = newUser,
-                description = "",
+                senseOfHumor = "",
                 aliases = mapOf()
             )
         )

@@ -89,7 +89,7 @@ fun CharacterEditorWidget(
             )
         )
     }
-    var newDescription by remember(characterProfile) { mutableStateOf(characterProfile.description) }
+    var newSenseOfHumor by remember(characterProfile) { mutableStateOf(characterProfile.senseOfHumor) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -120,9 +120,9 @@ fun CharacterEditorWidget(
                 .padding(bottom = 8.dp)
         )
         OutlinedTextField(
-            value = newDescription,
-            onValueChange = { newDescription = it },
-            label = { Text("Character description") },
+            value = newSenseOfHumor,
+            onValueChange = { newSenseOfHumor = it },
+            label = { Text("Sense of humor") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
@@ -134,7 +134,7 @@ fun CharacterEditorWidget(
                 onSave(
                     CharacterProfile(
                         characterProfile.id,
-                        newDescription,
+                        newSenseOfHumor,
                         fromAliasUiToMap(
                             discordAliasUi = newDiscordAliases,
                             whatsappAliasUi = newWhatsappAliases
@@ -153,7 +153,7 @@ fun CharacterEditorWidget(
 fun PreviewCharacterEditorWidget() {
     val mockCharacterProfile = CharacterProfile(
         id = "12345",
-        description = "This is a mock character background for preview purposes.",
+        senseOfHumor = "This is a mock character background for preview purposes.",
         aliases = mapOf(
             ChatWatcherAccessibilityService.DISCORD_PACKAGE to listOf("dis1", "dis2"),
             ChatWatcherAccessibilityService.WHATSAPP_PACKAGE to listOf("wa1", "wa2")
