@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.comedy.suggester.data.AppContainer
+import com.comedy.suggester.ui.common.showText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,14 +48,23 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         // Fully initialize app dependencies. Until this is done, event processing can't start
         CoroutineScope(Dispatchers.IO).launch {
             appContainer.appSettingsRepository.getMainSettings().collect { mainSettings ->
-                val openAiApiKey = mainSettings!!.openAiApiKey
-                appContainer.initializeOpenAiApiService(openAiApiKey)
+                if (mainSettings == null) {
+                    showText(
+                        applicationContext, "App settings aren't configured yet." +
+                                " Please open the comedy coach suggester app, then re-enable and disable" +
+                                " the accessibility part of this app."
+                    )
+                    return@collect
+                }
+                appContainer.initAppSettings(mainSettings)
+                val openAiApiKey = mainSettings.openAiApiKey
+                appContainer.initOpenAiApiService(openAiApiKey)
                 val anthropicApiKey = mainSettings.anthropicApiKey
-                appContainer.initializeAnthropicClient(anthropicApiKey)
+                appContainer.initAnthropicClient(anthropicApiKey)
                 isServiceReady = true
                 Log.d(
                     LOG_TAG,
-                    "Service is initialized"
+                    "Service is initialized with settings = $mainSettings"
                 )
             }
         }

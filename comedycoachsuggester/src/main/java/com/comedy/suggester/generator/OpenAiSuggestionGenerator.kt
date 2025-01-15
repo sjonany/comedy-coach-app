@@ -7,19 +7,24 @@ import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import com.comedy.suggester.Config
 import com.comedy.suggester.chatparser.ChatMessages
 import com.comedy.suggester.data.CharacterProfile
 
 /**
  * Generates suggestions using OpenAI
  */
-class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
+class OpenAiSuggestionGenerator(val apiClient: OpenAI) {
     companion object {
         private const val LOG_TAG = "OpenAiSuggestionGenerator"
     }
 
-    override suspend fun generateSuggestions(
+
+    /**
+     * @param modelName https://platform.openai.com/docs/models
+     * E.g. gpt-4-turbo-2024-04-09
+     */
+    suspend fun generateSuggestions(
+        modelName: String,
         chatMessages: ChatMessages,
         userHint: String,
         characterProfilesById: Map<String, CharacterProfile>
@@ -27,7 +32,7 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         // Construct prompt
         val prompt =
             PromptStrings.suggestionGenerationPrompt(chatMessages, userHint, characterProfilesById)
-        val llmRequest = createLlmRequest(prompt)
+        val llmRequest = createLlmRequest(prompt, modelName)
 
         // Ask LLM
         val chatChoices: List<ChatChoice> = apiClient.chatCompletion(llmRequest).choices
@@ -44,15 +49,15 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) : SuggestionGenerator {
         }
         return SuggestionResult(
             suggestions, GenerationMetadata(
-                Config.OPEN_AI_MODEL, prompt,
+                modelName, prompt,
                 llmResponse
             )
         )
     }
 
-    private fun createLlmRequest(prompt: String): ChatCompletionRequest {
+    private fun createLlmRequest(prompt: String, modelName: String): ChatCompletionRequest {
         val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId(Config.OPEN_AI_MODEL),
+            model = ModelId(modelName),
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.User,

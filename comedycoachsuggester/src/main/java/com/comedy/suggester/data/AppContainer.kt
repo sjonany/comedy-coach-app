@@ -16,9 +16,11 @@ interface AppContainer {
     val characterProfileRepository: CharacterProfileRepository
     var openAiClient: OpenAI?
     var anthropicClient: AnthropicClient?
+    var appSettings: AppSettings?
 
-    fun initializeOpenAiApiService(apiKey: String)
-    fun initializeAnthropicClient(apiKey: String)
+    fun initOpenAiApiService(apiKey: String)
+    fun initAnthropicClient(apiKey: String)
+    fun initAppSettings(appSettings: AppSettings)
 }
 
 /**
@@ -45,7 +47,7 @@ class AppDataContainer(private val context: Context) : AppContainer {
     override var openAiClient: OpenAI? = null
         get() = field ?: throw IllegalStateException("OpenAI API Service is not initialized yet.")
 
-    override fun initializeOpenAiApiService(apiKey: String) {
+    override fun initOpenAiApiService(apiKey: String) {
         openAiClient = OpenAI(
             token = apiKey,
             logging = LoggingConfig(LogLevel.All)
@@ -59,8 +61,19 @@ class AppDataContainer(private val context: Context) : AppContainer {
         get() = field
             ?: throw IllegalStateException("Anthropic API Service is not initialized yet.")
 
-    override fun initializeAnthropicClient(apiKey: String) {
+    override fun initAnthropicClient(apiKey: String) {
         anthropicClient =
             AnthropicOkHttpClient.builder().apiKey(apiKey).build()
+    }
+
+    /**
+     * Before accessing this field, call initAppSettings
+     */
+    override var appSettings: AppSettings? = null
+        get() = field
+            ?: throw IllegalStateException("App settings are not initialized yet.")
+
+    override fun initAppSettings(appSettings: AppSettings) {
+        this.appSettings = appSettings
     }
 }

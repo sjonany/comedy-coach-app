@@ -4,7 +4,6 @@ import android.util.Log
 import com.anthropic.client.AnthropicClient
 import com.anthropic.models.MessageCreateParams
 import com.anthropic.models.MessageParam
-import com.comedy.suggester.Config
 import com.comedy.suggester.chatparser.ChatMessages
 import com.comedy.suggester.data.CharacterProfile
 
@@ -12,32 +11,40 @@ import com.comedy.suggester.data.CharacterProfile
 /**
  * Generates suggestions using Claude
  */
-class AnthropicSuggestionGenerator(private val client: AnthropicClient) : SuggestionGenerator {
+class AnthropicSuggestionGenerator(private val client: AnthropicClient) {
     companion object {
         private const val LOG_TAG = "ClaudeSuggestionGenerator"
     }
 
-    override suspend fun generateSuggestions(
+    /**
+     * @param modelName https://docs.anthropic.com/en/docs/about-claude/models
+     */
+    fun generateSuggestions(
+        modelName: String,
         chatMessages: ChatMessages,
         userHint: String,
         characterProfilesById: Map<String, CharacterProfile>
     ): SuggestionResult? {
         val prompt =
             PromptStrings.suggestionGenerationPrompt(chatMessages, userHint, characterProfilesById)
-        val response = sendLlmRequest(client, prompt) ?: return null
+        val response = sendLlmRequest(client, prompt, modelName) ?: return null
         val suggestions = parseLlmResponse(response)
         if (suggestions.isEmpty()) {
             return null
         }
         return SuggestionResult(
             suggestions, GenerationMetadata(
-                Config.CLAUDE_MODEL, prompt,
+                modelName, prompt,
                 response
             )
         )
     }
 
-    fun sendLlmRequest(client: AnthropicClient, prompt: String): String? {
+    private fun sendLlmRequest(
+        client: AnthropicClient,
+        prompt: String,
+        modelName: String
+    ): String? {
         val request = MessageCreateParams.builder()
             .maxTokens(1024)
             .messages(
@@ -48,7 +55,7 @@ class AnthropicSuggestionGenerator(private val client: AnthropicClient) : Sugges
                         .build()
                 )
             )
-            .model(Config.CLAUDE_MODEL)
+            .model(modelName)
             .build()
 
         return try {

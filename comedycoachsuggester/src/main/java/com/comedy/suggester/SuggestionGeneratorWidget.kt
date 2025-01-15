@@ -13,7 +13,7 @@ import com.comedy.suggester.chatparser.ChatMessage
 import com.comedy.suggester.chatparser.ChatMessages
 import com.comedy.suggester.chatparser.ChatParserFactory
 import com.comedy.suggester.data.CharacterProfile
-import com.comedy.suggester.generator.AnthropicSuggestionGenerator
+import com.comedy.suggester.generator.SuggestionGeneratorRouter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -48,11 +48,13 @@ class SuggestionGeneratorWidget(
 
     // the widget that when clicked, will trigger suggestion generation.
     private var widgetView: View? = null
-    private val suggestionGenerator =
-        AnthropicSuggestionGenerator((context.applicationContext as SuggesterApplication).container.anthropicClient!!)
 
-    // TODO: Add model switcher.
-    // OpenAiSuggestionGenerator((context.applicationContext as SuggesterApplication).container.openAiClient!!)
+    private val appContainer = (context.applicationContext as SuggesterApplication).container
+    private val suggestionGenerator = SuggestionGeneratorRouter(
+        appContainer.appSettings!!.llmModel,
+        appContainer.anthropicClient!!, appContainer.openAiClient!!
+    )
+
     private val characterProfileRepository =
         (context.applicationContext as SuggesterApplication).container.characterProfileRepository
 
@@ -147,7 +149,7 @@ class SuggestionGeneratorWidget(
                         ), getSanitizedUserHint(),
                         characterProfilesById
                     )
-                
+
                 // When we're updating ui stuff, we have to go back to Main.
                 withContext(Dispatchers.Main) {
                     if (suggestions != null) {
