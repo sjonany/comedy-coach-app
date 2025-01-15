@@ -72,7 +72,8 @@ class SuggestionResultsWidget(
 
                 if (suggestionsLog != null) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        suggestionsLog = suggestionsLog!!.copy(chosenResponse = suggestion)
+                        suggestionsLog =
+                            suggestionsLog!!.copy(chosenResponse = sanitizeStringForCsv(suggestion))
                         generatedSuggestionsRepository.updateGeneratedSuggestion(
                             suggestionsLog!!
                         )
@@ -105,8 +106,8 @@ class SuggestionResultsWidget(
                 suggestionsLog = GeneratedSuggestions(
                     timestamp = System.currentTimeMillis(),
                     modelName = suggestionResult.generationMetadata.modelName,
-                    prompt = suggestionResult.generationMetadata.prompt,
-                    response = suggestionResult.generationMetadata.llmResponse,
+                    prompt = sanitizeStringForCsv(suggestionResult.generationMetadata.prompt),
+                    response = sanitizeStringForCsv(suggestionResult.generationMetadata.llmResponse),
                     chosenResponse = null
                 )
                 val newId =
@@ -181,6 +182,15 @@ class SuggestionResultsWidget(
             }
         }
 
+    }
+
+    // CSV treats \n to signal end of record.
+    // If we use \\n, google sheets and libre office will preserve the newlines within the cell.
+    // https://datascience.stackexchange.com/a/81361
+    // Then on google sheets, create another column like so, so you can see the newlines.
+    // =SUBSTITUTE(E2, "\n", char(10))
+    private fun sanitizeStringForCsv(str: String): String {
+        return str.replace("\n", "\\n")
     }
 
     val Int.dp: Int get() = (this * Resources.getSystem().displayMetrics.density).toInt()
