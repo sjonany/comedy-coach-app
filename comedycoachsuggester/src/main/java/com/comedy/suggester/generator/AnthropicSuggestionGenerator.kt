@@ -47,6 +47,7 @@ class AnthropicSuggestionGenerator(private val client: AnthropicClient) {
     ): String? {
         val request = MessageCreateParams.builder()
             .maxTokens(1024)
+            .temperature(1.0)
             .messages(
                 listOf(
                     MessageParam.builder()

@@ -57,6 +57,7 @@ class OpenAiSuggestionGenerator(val apiClient: OpenAI) {
 
     private fun createLlmRequest(prompt: String, modelName: String): ChatCompletionRequest {
         val chatCompletionRequest = ChatCompletionRequest(
+            temperature = 1.0,
             model = ModelId(modelName),
             messages = listOf(
                 ChatMessage(
