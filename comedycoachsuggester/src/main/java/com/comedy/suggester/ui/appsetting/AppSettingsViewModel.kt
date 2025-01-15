@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comedy.suggester.data.AppSettings
 import com.comedy.suggester.data.AppSettingsRepository
+import com.comedy.suggester.data.LlmModel
 import kotlinx.coroutines.launch
 
 /**
@@ -49,10 +50,8 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
 
     /** Save the current ui state to db. */
     suspend fun saveAppSettings() {
-        val dbRep = appSettingsUiState.appSettingsDetails.toDb()
-        appSettingsRepository.updateApiKeys(
-            dbRep.openAiApiKey,
-            dbRep.anthropicApiKey
+        appSettingsRepository.updateSettings(
+            appSettingsUiState.appSettingsDetails.toDb()
         )
     }
 }
@@ -70,7 +69,8 @@ data class AppSettingsUiState(
  */
 data class AppSettingsDetails(
     val openAiApiKey: String = "",
-    val anthropicApiKey: String = ""
+    val anthropicApiKey: String = "",
+    val llmModel: LlmModel = LlmModel.DEFAULT
 )
 
 
@@ -79,7 +79,8 @@ data class AppSettingsDetails(
  */
 fun AppSettingsDetails.toDb(): AppSettings = AppSettings(
     openAiApiKey = openAiApiKey,
-    anthropicApiKey = anthropicApiKey
+    anthropicApiKey = anthropicApiKey,
+    llmModel = llmModel
 )
 
 
@@ -95,5 +96,6 @@ fun AppSettings.toUiState(): AppSettingsUiState = AppSettingsUiState(
  */
 fun AppSettings.toUiDetails(): AppSettingsDetails = AppSettingsDetails(
     openAiApiKey = openAiApiKey,
-    anthropicApiKey = anthropicApiKey
+    anthropicApiKey = anthropicApiKey,
+    llmModel = llmModel
 )

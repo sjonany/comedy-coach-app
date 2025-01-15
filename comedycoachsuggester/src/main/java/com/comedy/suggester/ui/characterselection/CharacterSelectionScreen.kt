@@ -1,7 +1,5 @@
 package com.comedy.suggester.ui.characterselection
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.comedy.suggester.data.CharacterProfile
 import com.comedy.suggester.ui.AppViewModelProvider
+import com.comedy.suggester.ui.common.showText
 import com.comedy.suggester.ui.navigateToCharacterEditor
 import kotlinx.coroutines.launch
 
@@ -74,10 +73,6 @@ fun CharacterSelectionScreen(
         },
         modifier = modifier
     )
-}
-
-fun showText(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
 val NO_CHARACTER_SELECTED = "No character selected"

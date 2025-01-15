@@ -26,7 +26,12 @@ data class AppSettings(
     API key used to interact w/ Anthropic API
     Go here: https://console.anthropic.com/settings/keys
     */
-    val anthropicApiKey: String
+    val anthropicApiKey: String,
+
+    /**
+     * Which llm model to use
+     */
+    val llmModel: LlmModel
 ) {
     companion object {
         // ID of the main settings. For now there should just be one settings row and it has this ID.

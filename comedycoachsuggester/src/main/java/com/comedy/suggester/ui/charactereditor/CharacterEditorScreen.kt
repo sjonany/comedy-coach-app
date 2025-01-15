@@ -27,7 +27,7 @@ import com.comedy.suggester.ChatWatcherAccessibilityService
 import com.comedy.suggester.SuggesterApplication
 import com.comedy.suggester.data.CharacterProfile
 import com.comedy.suggester.ui.AppViewModelProvider
-import com.comedy.suggester.ui.characterselection.showText
+import com.comedy.suggester.ui.common.showText
 import kotlinx.coroutines.launch
 
 

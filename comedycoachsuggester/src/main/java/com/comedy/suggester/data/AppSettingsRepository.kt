@@ -12,7 +12,7 @@ interface AppSettingsRepository {
     fun getMainSettings(): Flow<AppSettings?>
 
     /**
-     * Update Open Ai Api Key in main settings
+     * Update settings
      */
-    suspend fun updateApiKeys(openAiApiKey: String, anthropicApiKey: String)
+    suspend fun updateSettings(appSettings: AppSettings)
 }

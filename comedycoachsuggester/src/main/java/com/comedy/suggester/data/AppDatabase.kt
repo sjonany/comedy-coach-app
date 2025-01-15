@@ -12,9 +12,9 @@ import androidx.room.TypeConverters
  */
 @Database(
     entities = [AppSettings::class, CharacterProfile::class],
-    version = 4, exportSchema = false
+    version = 5, exportSchema = false
 )
-@TypeConverters(MapTypeConverter::class)
+@TypeConverters(MyTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsDao(): AppSettingsDao
     abstract fun characterProfileDao(): CharacterProfileDao
