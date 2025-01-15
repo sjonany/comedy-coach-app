@@ -56,31 +56,40 @@ class PromptStringsTest {
     2. Match the character's sense of humor
     3. Incorporate elements from the user's hint
     
-    Before generating the responses, wrap your thought process in <brainstorming> tags:
+    You must follow ALL the steps below in order and explicitly show your work for each step.
+    Do not skip any steps or jump directly to the final suggestions.
     
-    <brainstorming>
     1. Analyze the chat history and identify key themes or topics to reference.
+    
     2. Interpret the user's hint and brainstorm ways to incorporate it into the responses.
+    
     3. Plan different types of humor to use (e.g., wordplay, situational humor), taking into account my sense of humor
+    
     4. For each of the 5 responses:
      a. Choose a specific type of humor to focus on.
      b. Select elements from the chat history and user hint to incorporate.
      c. Craft a response that combines these elements in a humorous way.
      d. Evaluate how well the response meets the four criteria listed above.
-    5. Review all 5 responses to ensure they are distinct and cover a range of humor styles.
-    </brainstorming>
+    Answer it like so:
+    [Response 1]
+    a. <result>
+    b. <result>
+    c. <result>
+    d. <result>
+    and repeat for the 5 responses
     
-    Now, generate 5 funny response suggestions. Present them as bullet points with hyphens, each on a new line. Do not include any explanations or additional commentary outside of the responses. Do not include the person's name in the responses. Pretend that you are the person typing out the reply.
+    5. Finally, create 5 funny response suggestions inspired by the brainstorming results.
+    Present them as bullet points with hyphens, each on a new line. Do not include any explanations or additional commentary outside of the responses. Do not include the person's name in the responses. Pretend that you are the person typing out the reply.
     
     Example format (replace with your actual funny responses):
-    - [Funny response 1]
-    - [Funny response 2]
-    - [Funny response 3]
-    - [Funny response 4]
-    - [Funny response 5]
+    - [Response 1]
+    - [Response 2]
+    - [Response 3]
+    - [Response 4]
+    - [Response 5]
     
     Remember to make each response distinct, creative, and tailored to the specific requirements outlined above.
-        """
+"""
             )
         )
     }
