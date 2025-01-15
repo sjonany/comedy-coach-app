@@ -16,7 +16,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
+import com.comedy.suggester.data.GeneratedSuggestions
 import com.comedy.suggester.generator.SuggestionResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /**
@@ -38,6 +42,11 @@ class SuggestionResultsWidget(
 
     private var windowManager: WindowManager? = null
     private var floatingView: View? = null
+    private val generatedSuggestionsRepository =
+        (context.applicationContext as SuggesterApplication).container.generatedSuggestionsRepository
+
+    // The DB log entry corresponding to this widget.
+    private var suggestionsLog: GeneratedSuggestions? = null
 
     fun showWidget() {
         if (floatingView != null) return // Already shown
@@ -59,6 +68,16 @@ class SuggestionResultsWidget(
             val button = createButton(suggestion)
             button.setOnClickListener {
                 replaceText(editTextNode, suggestion)
+                // Also log this choice to DB
+
+                if (suggestionsLog != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        suggestionsLog = suggestionsLog!!.copy(chosenResponse = suggestion)
+                        generatedSuggestionsRepository.updateGeneratedSuggestion(
+                            suggestionsLog!!
+                        )
+                    }
+                }
             }
             linearLayout.addView(button)
         }
@@ -74,14 +93,26 @@ class SuggestionResultsWidget(
 
         if (Config.IS_DEBUG) {
             val promptDebugText = TextView(context)
-            promptDebugText.setText(
-                "Model: ${suggestionResult.generationMetadata.modelName}\n\n" +
-                        DIVIDER +
-                        "Prompt: ${suggestionResult.generationMetadata.prompt}\n\n" +
-                        DIVIDER +
-                        "Raw LLM response: ${suggestionResult.generationMetadata.llmResponse}\n\n"
-            )
+            promptDebugText.text = "Model: ${suggestionResult.generationMetadata.modelName}\n\n" +
+                    DIVIDER +
+                    "Prompt: ${suggestionResult.generationMetadata.prompt}\n\n" +
+                    DIVIDER +
+                    "Raw LLM response: ${suggestionResult.generationMetadata.llmResponse}\n\n"
             linearLayout.addView(promptDebugText)
+
+            // Also log to DB
+            CoroutineScope(Dispatchers.IO).launch {
+                suggestionsLog = GeneratedSuggestions(
+                    timestamp = System.currentTimeMillis(),
+                    modelName = suggestionResult.generationMetadata.modelName,
+                    prompt = suggestionResult.generationMetadata.prompt,
+                    response = suggestionResult.generationMetadata.llmResponse,
+                    chosenResponse = null
+                )
+                val newId =
+                    generatedSuggestionsRepository.insertNewGeneratedSuggestion(suggestionsLog!!)
+                suggestionsLog = suggestionsLog!!.copy(id = newId.toInt())
+            }
         }
 
         val displayMetrics = context.resources.displayMetrics

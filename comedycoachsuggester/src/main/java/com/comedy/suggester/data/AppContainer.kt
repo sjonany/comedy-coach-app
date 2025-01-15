@@ -14,6 +14,7 @@ import com.anthropic.client.okhttp.AnthropicOkHttpClient
 interface AppContainer {
     val appSettingsRepository: AppSettingsRepository
     val characterProfileRepository: CharacterProfileRepository
+    val generatedSuggestionsRepository: GeneratedSuggestionsRepository
     var openAiClient: OpenAI?
     var anthropicClient: AnthropicClient?
     var appSettings: AppSettings?
@@ -39,6 +40,12 @@ class AppDataContainer(private val context: Context) : AppContainer {
      */
     override val characterProfileRepository: CharacterProfileRepository by lazy {
         OfflineCharacterProfileRepository(AppDatabase.getDatabase(context).characterProfileDao())
+    }
+
+    override val generatedSuggestionsRepository: GeneratedSuggestionsRepository by lazy {
+        OfflineGeneratedSuggestionsRepository(
+            AppDatabase.getDatabase(context).generatedSuggestionsDao()
+        )
     }
 
     /**

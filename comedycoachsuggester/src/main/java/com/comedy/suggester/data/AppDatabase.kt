@@ -11,13 +11,14 @@ import androidx.room.TypeConverters
  * Code adapted from https://developer.android.com/codelabs/basic-android-kotlin-compose-persisting-data-room#6
  */
 @Database(
-    entities = [AppSettings::class, CharacterProfile::class],
-    version = 5, exportSchema = false
+    entities = [AppSettings::class, CharacterProfile::class, GeneratedSuggestions::class],
+    version = 6, exportSchema = false
 )
 @TypeConverters(MyTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsDao(): AppSettingsDao
     abstract fun characterProfileDao(): CharacterProfileDao
+    abstract fun generatedSuggestionsDao(): GeneratedSuggestionsDao
 
     companion object {
         private const val DATABASE_NAME = "comedy_coach_db"
