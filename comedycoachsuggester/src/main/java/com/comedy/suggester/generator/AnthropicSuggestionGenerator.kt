@@ -60,6 +60,7 @@ class AnthropicSuggestionGenerator(private val client: AnthropicClient) {
             .build()
 
         return try {
+            Log.d(LOG_TAG, "Sending request to anthropic")
             val response = client.messages().create(request)
             Log.d(LOG_TAG, "Response from anthropic: ${response}")
             response.content().firstOrNull()?.asTextBlock()?.text()
