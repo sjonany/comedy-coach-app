@@ -16,7 +16,7 @@ class PromptUtilsTest {
                 Here is the response:
                 - First suggestion
                 
-                - Second suggestion
+                - "Second suggestion"
                 Have a good day!
                 
             """.trimIndent()

@@ -36,6 +36,11 @@ internal fun parseLlmResponse(llmResponse: String): List<String> {
             continue
         }
         curTok = curTok.removePrefix(SUGGESTION_PREFIX).trim()
+
+        // Remove unnecessary surrounding quotes
+        if (curTok.startsWith('"') && curTok.endsWith('"')) {
+            curTok = curTok.substring(1, curTok.length - 1)
+        }
         result.add(curTok)
     }
 
