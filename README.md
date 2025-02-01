@@ -7,7 +7,10 @@ Here's a video of it in action:
 
 https://github.com/user-attachments/assets/81a52e64-939f-4ab3-80dd-5ea1cc99329b
 
-See this [medium post](https://medium.com/@sjonany/can-ai-be-funny-an-exploration-with-texting-on-android-and-chatgpt-911af17f9b00) for more interesting examples
+More references:
+- [Medium post](https://medium.com/@sjonany/can-ai-be-funny-an-exploration-with-texting-on-android-and-chatgpt-911af17f9b00) 
+- [Detailed writeup](https://docs.google.com/document/d/1T3rWOU-3i9XD_WuCVmVEdFnNKUTnSM8bSeO3da9JzdA/edit?tab=t.0)
+- [More generated jokes](https://docs.google.com/spreadsheets/d/1jxaJp7eOEirKNPpf6xTbL1fS0k_ZtVg8fF7wkOmuXGk/edit?gid=582760902#gid=582760902)
 
 ## How to use
 - Install the APK by cloning this repo and running the project on android studio with your phone connected through USB. See [this guide](https://developer.android.com/studio/run/device).
