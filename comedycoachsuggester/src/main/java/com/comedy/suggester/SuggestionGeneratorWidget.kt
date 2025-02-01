@@ -229,6 +229,10 @@ class SuggestionGeneratorWidget(
             (packageName == ChatWatcherAccessibilityService.DISCORD_PACKAGE && userHint.startsWith("Message @"))
             ||
             (packageName == ChatWatcherAccessibilityService.WHATSAPP_PACKAGE && userHint == "Message")
+            ||
+            (packageName == ChatWatcherAccessibilityService.INSTAGRAM_PACKAGE && userHint.startsWith(
+                "Message"
+            ))
         ) {
             return ""
         }

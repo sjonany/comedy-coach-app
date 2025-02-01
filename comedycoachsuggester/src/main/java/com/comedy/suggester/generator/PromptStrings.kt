@@ -56,11 +56,13 @@ Only reply with the responses following this format (replace with your actual fu
 - [Response 3]
 - [Response 4]
 - [Response 5]
+
+Do NOT add further explanation beyond the responses
 """
             )
         }
 
-        val DEFAULT_SENSE_OF_HUMOR ="""
+        val DEFAULT_SENSE_OF_HUMOR = """
             Your sense of humor leans toward:
             1. Exaggeration & Hyperbole – You amplify situations for comedic effect (e.g., "OH LORD HAVE MERCY THESE HARLOTS ARE MAKING ME QUESTION MY DEVOTION").
             2. Irony & Sarcasm – You frequently use dry, deadpan humor to contrast expectations with reality (e.g., "np, can't have people thinking that my friends are uneducated").

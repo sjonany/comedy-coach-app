@@ -24,12 +24,14 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
         private const val LOG_TAG = "ChatWatcherAccessibilityService"
         const val DISCORD_PACKAGE = "com.discord"
         const val WHATSAPP_PACKAGE = "com.whatsapp"
+        const val INSTAGRAM_PACKAGE = "com.instagram.android"
+        const val MESSENGER_PACKAGE = "com.facebook.orca"
 
         // If the user types this sequence, then the generator widget will show up.
         const val TURN_ON_PREFIX = "Qw"
 
         private val HANDLED_PACKAGES = setOf(
-            DISCORD_PACKAGE, WHATSAPP_PACKAGE
+            DISCORD_PACKAGE, WHATSAPP_PACKAGE, INSTAGRAM_PACKAGE, MESSENGER_PACKAGE
         )
     }
 
@@ -86,7 +88,7 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
 
         Log.d(
             LOG_TAG,
-            "got event: $eventTypeString, $packageName"
+            "got event: $eventTypeString, $packageName, ${event.className}"
         )
 
         // Need overlay permission first. The settings activity handles all these
@@ -103,7 +105,12 @@ class ChatWatcherAccessibilityService : AccessibilityService() {
             return
         }
 
-        if (event.className == "android.widget.EditText" &&
+        if ((
+                    // Discord, Whatsapp
+                    event.className == "android.widget.EditText" ||
+                            // Instagram
+                            event.className == "android.widget.AutoCompleteTextView"
+                    ) &&
             event.source != null &&
             event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
         ) {

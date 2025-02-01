@@ -2,7 +2,7 @@
 <accessibility-service android:accessibilityEventTypes="typeViewTextChanged"
     android:accessibilityFeedbackType="feedbackAllMask"
     android:notificationTimeout="100"
-    android:packageNames="com.discord,com.whatsapp"
+    android:packageNames="com.discord,com.whatsapp,com.instagram.android,com.facebook.orca"
     android:canRetrieveWindowContent="true"
     android:accessibilityFlags="flagRetrieveInteractiveWindows"
     xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -65,6 +65,8 @@ Only reply with the responses following this format (replace with your actual fu
 - [Response 3]
 - [Response 4]
 - [Response 5]
+
+Do NOT add further explanation beyond the responses
 """
             )
         )
