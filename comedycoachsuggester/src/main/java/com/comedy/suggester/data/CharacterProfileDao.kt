@@ -24,4 +24,7 @@ interface CharacterProfileDao {
 
     @Update
     suspend fun updateProfile(profile: CharacterProfile)
+
+    @Query("SELECT COUNT(*) FROM ${CharacterProfile.TABLE_NAME}")
+    suspend fun getCount(): Int
 }

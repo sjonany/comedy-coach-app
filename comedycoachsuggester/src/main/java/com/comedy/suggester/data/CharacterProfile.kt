@@ -22,18 +22,7 @@ data class CharacterProfile(
     the same themes like the character's jobs. Someday I might add the character background back,
     but for now we'll leave the relevant character background for the user to add in the user hint.
 
-    Here's an example that worked best for me:
-    "Here are some patterns that I like to use
-    - Sexual/crude humor
-    - Often uses irony and wordplay
-    - Self-deprecating
-    - Sarcastic/playful mockery, especially with friends
-    - Quick-witted responses
-    - Mixing casual and formal language for comedic effect
-    - Topical/social commentary
-    - Employs cultural references and memes
-    - Competitive banter/playful arrogance
-    - Includes religious humor/references as contrast"
+    Please see PromptStrings.DEFAULT_SENSE_OF_HUMOR for an example string.
      */
     val senseOfHumor: String,
 
