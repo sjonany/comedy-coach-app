@@ -30,11 +30,11 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
-        <!-- Optional: an activity for controlling the IME settings. -->
+        <!-- Activity for controlling the app settings. -->
         <activity
             android:name=".ComedyCoachSettingsActivity"
             android:exported="true"
-            android:label="comedy coach settings">
+            android:label="Wit Wizard Settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

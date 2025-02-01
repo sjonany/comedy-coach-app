@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -71,7 +72,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Comedy Coach") },
+                    title = { Text(stringResource(R.string.app_name)) },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
@@ -97,7 +98,7 @@ fun DrawerContent(onItemSelected: (AppScreen) -> Unit) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Screen selection", modifier = Modifier.padding(16.dp))
+        Text(stringResource(R.string.app_name), modifier = Modifier.padding(16.dp))
         HorizontalDivider()
         DrawerItem(
             text = AppScreen.AppSetting.title,
