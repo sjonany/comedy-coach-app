@@ -25,15 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.comedy.suggester.R
 import com.comedy.suggester.ui.appsetting.AppSettingScreen
-import com.comedy.suggester.ui.charactereditor.CharacterEditorScreen
-import com.comedy.suggester.ui.characterselection.CharacterSelectionScreen
+import com.comedy.suggester.ui.charactereditor.HumorSettingScreen
 import kotlinx.coroutines.launch
 
 /**
@@ -41,7 +38,13 @@ import kotlinx.coroutines.launch
  */
 enum class AppScreen(val title: String, val route: String) {
     AppSetting(title = "App settings", route = "app_settings"),
-    CharacterSelection(title = "Humor settings", route = "character_selection"),
+    HumorSetting(title = "Humor setting", route = "humor_setting"),
+
+    // TODO: I'm disabling these two. Let's just keep it simple and have 1 sense of humor
+    // The problem is that if I want character selection, then I need to support per-app aliasing,
+    // and supplying alias + per-character sense of humor just feels like too much work for anyone.
+    // E.g. how will I be able to tell that this is the friend's username in the messenger app?
+    CharacterSelection(title = "Character selection", route = "character_selection"),
     CharacterEditor(title = "Character editor", route = "character_edit"),
 }
 
@@ -101,8 +104,8 @@ fun DrawerContent(onItemSelected: (AppScreen) -> Unit) {
             onClick = { onItemSelected(AppScreen.AppSetting) }
         )
         DrawerItem(
-            text = AppScreen.CharacterSelection.title,
-            onClick = { onItemSelected(AppScreen.CharacterSelection) }
+            text = AppScreen.HumorSetting.title,
+            onClick = { onItemSelected(AppScreen.HumorSetting) }
         )
     }
 }
@@ -126,10 +129,15 @@ fun DrawerItem(text: String, onClick: () -> Unit) {
 
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = AppScreen.CharacterSelection.route) {
+    NavHost(navController = navController, startDestination = AppScreen.AppSetting.route) {
         composable(AppScreen.AppSetting.route) {
             AppSettingScreen(navController, modifier)
         }
+        composable(AppScreen.HumorSetting.route) {
+            HumorSettingScreen(modifier, navController)
+        }
+
+        /* These are disabled. See "I'm disabling these two" note above.
         composable(AppScreen.CharacterSelection.route) {
             CharacterSelectionScreen(navController, modifier)
         }
@@ -141,6 +149,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 backStackEntry.arguments?.getString("characterId")?.let { Uri.decode(it) }
             CharacterEditorScreen(modifier, navController, characterName!!)
         }
+         */
     }
 }
 
