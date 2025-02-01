@@ -26,69 +26,45 @@ class PromptStringsTest {
                 )
             )
         )
+        println(prompt)
         assertThat(prompt).isEqualTo(
             trimLines(
                 """
-                    You are an AI assistant specialized in generating humorous responses for a chat application. Your task is to create 5 funny replies that fit the context of an ongoing conversation, align with the characters' senses of humor, and incorporate a user-provided hint for the joke angle.
-    
-    First, review the chat history:
-    
-    <chat_history>
-    Alice: Hello, everyone!
-    Bob: Hi Alice!
-    </chat_history>
-    
-    Take into account all these character's senses of humor:
-    <sense_of_humor>
-    <AliceId>
-    AliceDescription
-    </AliceId>
-    </sense_of_humor>
-    
-    The user has provided a hint for the desired joke angle or theme:
-    
-    <user_hint>
-    make it punny
-    </user_hint>
-    
-    Your task is to generate 5 distinct funny responses that meet the following criteria:
-    1. Fit naturally within the context of the chat history
-    2. Match the character's sense of humor
-    3. Incorporate elements from the user's hint
-    
-    You must follow ALL the steps below in order and explicitly show your work for each step.
-    Do not skip any steps or jump directly to the final suggestions.
-    
-    1. Analyze the chat history and identify key themes or topics to reference.
-    
-    2. Interpret the user's hint and brainstorm ways to incorporate it into the responses.
-    
-    3. Plan different types of humor to use (e.g., wordplay, situational humor), taking into account my sense of humor
-    
-    4. For each of the 5 responses:
-     a. Choose a specific type of humor to focus on.
-     b. Select elements from the chat history and user hint to incorporate.
-     c. Craft a response that combines these elements in a humorous way.
-     d. Evaluate how well the response meets the four criteria listed above.
-    Answer it like so:
-    [Response 1]
-    a. <result>
-    b. <result>
-    c. <result>
-    d. <result>
-    and repeat for the 5 responses
-    
-    5. Finally, create 5 funny response suggestions inspired by the brainstorming results.
-    Present them as bullet points with hyphens, each on a new line. Do not include any explanations or additional commentary outside of the responses. Do not include the person's name in the responses. Pretend that you are the person typing out the reply.
-    
-    Example format (replace with your actual funny responses):
-    - [Response 1]
-    - [Response 2]
-    - [Response 3]
-    - [Response 4]
-    - [Response 5]
-    
-    Remember to make each response distinct, creative, and tailored to the specific requirements outlined above.
+You are an AI assistant specialized in generating humorous responses for a chat application. Your task is to create 5 funny replies that fit the context of an ongoing conversation, align with the characters' senses of humor, and incorporate a user-provided hint for the joke angle.
+
+First, review the chat history:
+
+<chat_history>
+Alice: Hello, everyone!
+Bob: Hi Alice!
+</chat_history>
+
+Take into account all these character's senses of humor:
+<sense_of_humor>
+<AliceId>
+AliceDescription
+</AliceId>
+</sense_of_humor>
+
+
+The user has provided a hint for the desired joke angle or theme:
+
+<user_hint>
+make it punny
+</user_hint>
+
+Your task is to generate 5 distinct funny responses that meet the following criteria:
+1. Fit naturally within the context of the chat history
+2. Match my sense of humor
+3. Incorporate elements from the user's hint
+4. Make the response short - at most one sentence and informal, like amongst close friends who are 20 year olds.
+
+Only reply with the responses following this format (replace with your actual funny responses):
+- [Response 1]
+- [Response 2]
+- [Response 3]
+- [Response 4]
+- [Response 5]
 """
             )
         )

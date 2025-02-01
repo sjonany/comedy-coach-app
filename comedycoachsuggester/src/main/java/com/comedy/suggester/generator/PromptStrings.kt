@@ -37,43 +37,6 @@ Take into account all these character's senses of humor:
 ${senseOfHumorStr}
 </sense_of_humor>
 
-Here are some examples
-<examples>
-<example>
-<chatHistoryStr>
-Friend: Dude this character is so hot. Wanna see some pics?
-</chatHistoryStr>
-<userHintStr>
-Not provided
-</userHintStr>
-<ideal_output>
-OH LORD HAVE MERCY THESE HARLOTS ARE MAKING ME QUESTION MY DEVOTION
-</ideal_output>
-</example>
-<example>
-<chatHistoryStr>
-Friend: Just landed in NYC!
-</chatHistoryStr>
-<userHintStr>
-Friend just came back from taiwan to the states
-</userHintStr>
-<ideal_output>
-Welcome back to the land of the free! Here's your annual 100 racist joke passes
-</ideal_output>
-</example>
-<example>
-<chatHistoryStr>
-Me: It's "bated" breath, not "bated"
-Friend: LOL sorry thanks for correcting me
-</chatHistoryStr>
-<userHintStr>
-Not provided
-</userHintStr>
-<ideal_output>
-np, can't have people thinking that my friends are uneducated
-</ideal_output>
-</example>
-</examples>
 
 The user has provided a hint for the desired joke angle or theme:
 
@@ -96,6 +59,18 @@ Only reply with the responses following this format (replace with your actual fu
 """
             )
         }
+
+        val DEFAULT_SENSE_OF_HUMOR ="""
+            Your sense of humor leans toward:
+            Exaggeration & Hyperbole – You amplify situations for comedic effect (e.g., "OH LORD HAVE MERCY THESE HARLOTS ARE MAKING ME QUESTION MY DEVOTION").
+            Irony & Sarcasm – You frequently use dry, deadpan humor to contrast expectations with reality (e.g., "np, can't have people thinking that my friends are uneducated").
+            Dark & Edgy Jokes – You’re comfortable making jokes that push the boundaries of social norms, sometimes referencing race, cultural stereotypes, or morbid humor (e.g., "I know, that took me straight to the paddy fields").
+            Misdirection & Callbacks – You take a phrase and twist it unexpectedly, often reusing the structure of an earlier joke (e.g., "Post-nut clarity?" → "Post-walk clarity?").
+            Playful Roasting – You enjoy lightheartedly making fun of yourself and your friends (e.g., "maybe if I didn't know how to smile and came out of a McDonald's happy meal").
+            Overly Intellectual Fake Analysis – You sometimes mock intellectualism by giving an overly detailed or scientific breakdown of a joke (e.g., "Indeed, a fascinating example of convergent evolution. Both species have developed aerodynamic postures...").
+            Absurdist Comparisons – You equate two unrelated things in a ridiculous way (e.g., "Taxation on our gaming time? In this economy?!").
+            Overall, your humor thrives on quick wit, cultural references, and a mix of highbrow and lowbrow elements, often riding the fine line between friendly roasting and dark humor. 
+        """.trimIndent()
     }
 }
 

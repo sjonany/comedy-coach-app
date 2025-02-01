@@ -26,6 +26,7 @@ import androidx.navigation.NavHostController
 import com.comedy.suggester.ChatWatcherAccessibilityService
 import com.comedy.suggester.SuggesterApplication
 import com.comedy.suggester.data.CharacterProfile
+import com.comedy.suggester.generator.PromptStrings
 import com.comedy.suggester.ui.AppViewModelProvider
 import com.comedy.suggester.ui.common.showText
 import kotlinx.coroutines.launch
@@ -128,6 +129,13 @@ fun CharacterEditorWidget(
                 .height(200.dp)
                 .padding(bottom = 8.dp)
         )
+        Button(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
+                newSenseOfHumor = PromptStrings.DEFAULT_SENSE_OF_HUMOR
+            }) {
+            Text("Use default sense of humor")
+        }
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
