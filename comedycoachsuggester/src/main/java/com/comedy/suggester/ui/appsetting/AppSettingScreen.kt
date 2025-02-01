@@ -1,13 +1,15 @@
 package com.comedy.suggester.ui.appsetting
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,6 +17,8 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,7 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -68,17 +74,41 @@ fun AppSettingWidget(
     onAppSettingsChange: (AppSettingsDetails) -> Unit,
     onSaveClick: () -> Unit
 ) {
+
+    val uriHandler = LocalUriHandler.current
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
     ) {
         LlmModelPicker(modifier, appSettingsUiState.appSettingsDetails.llmModel, onValueChange = {
             onAppSettingsChange(
                 appSettingsUiState.appSettingsDetails.copy(llmModel = LlmModel.valueOf(it))
             )
         })
+
+        Row(
+            modifier = Modifier.padding(bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Enter OpenAI API Key",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = {
+                    uriHandler.openUri("https://platform.openai.com/settings/organization/api-keys")
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Get API Key"
+                )
+            }
+        }
+
         TextField(
             value = appSettingsUiState.appSettingsDetails.openAiApiKey,
             onValueChange = {
@@ -86,11 +116,32 @@ fun AppSettingWidget(
                     appSettingsUiState.appSettingsDetails.copy(openAiApiKey = it)
                 )
             },
-            label = { Text("Enter OpenAI API Key") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            label = { Text("Paste your OpenAI API key here") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         )
+
+
+        Row(
+            modifier = Modifier.padding(bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Enter Anthropic API Key",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = {
+                    uriHandler.openUri("https://console.anthropic.com/settings/keys")
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Get API Key"
+                )
+            }
+        }
+
         TextField(
             value = appSettingsUiState.appSettingsDetails.anthropicApiKey,
             onValueChange = {
@@ -98,10 +149,8 @@ fun AppSettingWidget(
                     appSettingsUiState.appSettingsDetails.copy(anthropicApiKey = it)
                 )
             },
-            label = { Text("Enter Anthropic API Key") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            label = { Text("Paste your Anthropic API key here") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         )
         Button(
             onClick = onSaveClick,
@@ -132,6 +181,11 @@ fun LlmModelPicker(
         selectedModel.setTextAndPlaceCursorAtEnd(llmModel.name)
     }
 
+    Text(
+        text = "Choose LLM model",
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.fillMaxWidth()
+    )
     ExposedDropdownMenuBox(
         expanded = isExpanded,
         onExpandedChange = { isExpanded = it }
@@ -139,7 +193,7 @@ fun LlmModelPicker(
         TextField(
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                .padding(16.dp),
+                .padding(8.dp),
             state = selectedModel,
             readOnly = true,
             lineLimits = TextFieldLineLimits.SingleLine,

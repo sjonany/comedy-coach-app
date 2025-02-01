@@ -126,7 +126,7 @@ fun CharacterEditorWidget(
             label = { Text("Sense of humor") },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(400.dp)
                 .padding(bottom = 8.dp)
         )
         Button(

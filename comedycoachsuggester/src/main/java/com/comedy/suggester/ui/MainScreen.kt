@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
  */
 enum class AppScreen(val title: String, val route: String) {
     AppSetting(title = "App settings", route = "app_settings"),
-    CharacterSelection(title = "Character selection", route = "character_selection"),
+    CharacterSelection(title = "Humor settings", route = "character_selection"),
     CharacterEditor(title = "Character editor", route = "character_edit"),
 }
 
