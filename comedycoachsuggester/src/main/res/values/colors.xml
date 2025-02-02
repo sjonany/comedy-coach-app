@@ -14,4 +14,5 @@
     <color name="on_secondary">#FFFFFF</color>
     <color name="tertiary">#7D5260</color>
     <color name="on_tertiary">#FFFFFF</color>
+    <color name="cancel">#D32F2F</color>
 </resources>
